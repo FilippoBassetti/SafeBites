@@ -1,16 +1,15 @@
 openapi: 3.0.0
 info:
-  title: Simple Inventory API
-  description: This is a simple API
-  contact:
-    email: you@your-company.com
+  title: SafeBites OpenAPI 3.0
+  description: APi for managing and research of resturants
   license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    name: MIT
   version: 1.0.0
 servers:
 - url: https://virtserver.swaggerhub.com/filippo.bassetti/SafeBitesApi/1.0.0
   description: SwaggerHub API Auto Mocking
+- url: http://localhost:8000/api/v1
+  description: Localhost
 tags:
 - name: admins
   description: Secured Admin-only calls
@@ -88,39 +87,55 @@ paths:
           description: an existing item already exists
 components:
   schemas:
-    InventoryItem:
+    Student:
       required:
+      - email
       - id
-      - manufacturer
-      - name
-      - releaseDate
+      - username
       type: object
       properties:
         id:
+          type: integer
+          description: ID of the user
+        email:
           type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        name:
+          description: Email address of the user
+        username:
           type: string
-          example: Widget Adapter
-        releaseDate:
-          type: string
-          format: date-time
-          example: 2016-08-29T09:12:33.001Z
-        manufacturer:
-          $ref: '#/components/schemas/Manufacturer'
-    Manufacturer:
+          description: username
+    Restaurants:
       required:
+      - adress
+      - category
+      - email
+      - id
       - name
       type: object
       properties:
+        id:
+          type: integer
+          description: ID of the restaurant
+        email:
+          type: string
+          description: Email address of the restaurant
         name:
           type: string
-          example: ACME Corporation
-        homePage:
+          description: Name of the restaurant
+        adress:
           type: string
-          format: url
-          example: https://www.acme-corp.com
-        phone:
+          description: adress of the restaurant
+        category:
           type: string
-          example: 408-867-5309
+          description: type of gnam gnam place of the activity
+    Dish:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the dish
+        name:
+          type: string
+          description: name of the dish
