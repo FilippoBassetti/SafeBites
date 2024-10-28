@@ -1,0 +1,135 @@
+/* Component 1 */
+
+position: absolute;
+width: 1588px;
+height: 117px;
+left: 70px;
+top: 109px;
+
+
+
+/* Group 3 */
+
+position: absolute;
+left: 27.9%;
+right: 27.9%;
+top: 26.5%;
+bottom: 19.66%;
+
+
+
+/* Group 2 */
+
+position: absolute;
+left: 27.9%;
+right: 27.9%;
+top: 26.5%;
+bottom: 19.66%;
+
+
+
+/* Rectangle 4 */
+
+position: absolute;
+left: 27.9%;
+right: 27.9%;
+top: 26.5%;
+bottom: 19.66%;
+
+background: rgba(198, 159, 159, 0.2);
+border-radius: 60px;
+
+
+/* cerca un ristorante */
+
+position: absolute;
+left: 32.75%;
+right: 56.3%;
+top: 49.57%;
+bottom: 33.33%;
+
+font-family: 'Helvetica Neue';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: rgba(0, 0, 0, 0.34);
+
+
+
+/* Group 1 */
+
+position: absolute;
+left: 29.41%;
+right: 68.51%;
+top: 40.17%;
+bottom: 28.85%;
+
+
+
+/* Rectangle 5 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 30.42%;
+right: 69.27%;
+top: 58.4%;
+bottom: 24.5%;
+
+background: rgba(198, 159, 159, 0.2);
+border: 1.5px solid #000000;
+border-radius: 20px;
+transform: rotate(-41.77deg);
+
+
+/* Ellipse 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 29.41%;
+right: 68.95%;
+top: 40.17%;
+bottom: 37.61%;
+
+background: rgba(198, 159, 159, 0.2);
+border: 1.5px solid #000000;
+
+
+/* User
+
+Keywords: person, account
+*/
+
+position: absolute;
+left: 95.84%;
+right: 0%;
+top: 20.51%;
+bottom: 20.51%;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 12.5%;
+bottom: 12.5%;
+
+border: 4px solid #E22F2F;
+
+
+/* image 14 */
+
+position: absolute;
+left: 0%;
+right: 84.45%;
+top: 0%;
+bottom: 0%;
+
+background: url(image.png);
