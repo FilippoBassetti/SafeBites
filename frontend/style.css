@@ -1,19 +1,25 @@
+/* font */ 
+
 @font-face {
     font-family: HelveticaNeue;
     src: url(font/helvetica-neue/HelveticaNeue-MediumCond.otf);
     font-weight: Medium;
     font-stretch: condensed;
 }
+
 @font-face {
     font-family: HelveticaNeue;
     src: url(font/helvetica-neue/HelveticaNeue-Medium.otf);
     font-weight: Medium;
 }
+
 @font-face {
     font-family: Agatho;
     src: url(font/Agatho-Light/Agatho_Light.otf);
     font-weight: light;
 }
+
+/* body */ 
 
 body {
     background-color: #FAF7F5;
@@ -21,6 +27,8 @@ body {
     flex-direction: column;
     align-items: center;
 }
+
+/* header */ 
 
 .big-div {
     height: 150px;
@@ -40,10 +48,19 @@ body {
     align-items: center;
 }
 
+/* logo */ 
+
 #l-div {
     justify-content: flex-start;
     padding-left: 30px;
 }
+
+#logo {
+    height: 100%;
+    mix-blend-mode: multiply;
+}
+
+/* search bar */ 
 
 #s-div {
     left: auto;
@@ -55,26 +72,6 @@ body {
     align-items: center;
     justify-content: center;
 }
-
-#u-div {
-    justify-content: flex-end;
-    flex-shrink: 3;
-    padding-left: 5px;
-    padding-right: 30px;
-}
-
-
-#logo {
-    height: 100%;
-    mix-blend-mode: multiply;
-}
-
-#user {
-    border: none;
-    outline: none;
-    background: transparent;
-}
-
 
 .search {
     --padding: 4px;
@@ -111,6 +108,23 @@ body {
 
 }
 
+/* user */ 
+
+#u-div {
+    justify-content: flex-end;
+    flex-shrink: 3;
+    padding-left: 5px;
+    padding-right: 30px;
+}
+
+#user {
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+/* filter */ 
+
 .filter-div {
     border: 1px solid black;
     font-family: HelveticaNeue;
@@ -139,21 +153,141 @@ body {
     border: 1px solid black;
 }
 
-.option:hover{
-    img{
+.option:hover {
+    img {
         /*filter: drop-shadow(0px 1000px 0 #287233);*/
         width: 95%;
         height: 95%;
     }
 }
 
-.option > img {
+.option>img {
     width: 80%;
     height: 80%;
     filter: drop-shadow(0px 1000px 0 #E22F2F);
     transform: translateY(-1000px);
 }
 
+/* body */ 
+
+.body-div {
+    border: 1px solid black;
+    display: flex;
+    align-content: stretch;
+}
+
+/* card box */ 
+
+#card-div {
+    width: 70%;
+    display: flex;
+}
+
+.card {
+    width: 220px;
+    height: 260px;
+    border-radius: 40px;
+    background-color: rgba(198, 159, 159, 0.2);
+    box-shadow: 0 5px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* card top */ 
+
+.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.star-checkbox {
+    /* */ 
+}
+
+.star-checkbox input[type="checkbox"] {
+    appearance: none;
+    display: none;
+}
+
+.star-checkbox label {
+    position: relative;
+    top: -15px;
+    right: -5px;
+    margin-top: 0px;
+    font-size: 40px;
+    color: #C69F9F;
+    cursor: pointer;
+}
+
+.star-checkbox label:hover {
+    color: #c97171;
+    text-shadow: 0px 0px 4px rgba(255, 0, 0, 0.48);
+}
+
+.star-checkbox input[type="checkbox"]:checked+label {
+    color: #E22F2F;
+}
+
+.card-img {
+    /*background-image: url('img/placeholder_1.png');*/
+    width: 165px;
+    height: 108px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+}
+
+/* card middle */
+
+.card-name {
+    font-size: 30px;
+    font-family: Agatho;
+    color: #287233;
+}
+
+/* card bottom */ 
+
+.bottom {
+    display: flex;
+    justify-content: space-between;
+    font-family: HelveticaNeue;
+    font-weight: Medium;
+}
+
+.tags {
+    display: flex;
+    gap: 4px;
+    row-gap: 0px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 50%;
+}
+
+.tag {
+
+    background-color: #D9D9D9;
+    color: #666;
+    padding: 3px 6px;
+    border-radius: 15px;
+    font-size: 0.6em;
+}
+
+/* map */ 
+
+.map-div {
+    width: 50%;
+
+    img {
+        border-radius: 25px;
+        width: 100%;
+    }
+}
+
+/* dimesnion adjustment */ 
 
 @media all and (max-width:1500px) {
     #u-div {
@@ -164,6 +298,7 @@ body {
 @media all and (max-width:750px) {
     .big-div {
         flex-wrap: wrap;
+        height: 330px;
     }
 
     #l-div {
@@ -177,6 +312,5 @@ body {
     #u-div {
         order: 2;
     }
-    
-}
 
+}
