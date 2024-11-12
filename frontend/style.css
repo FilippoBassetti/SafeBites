@@ -174,13 +174,17 @@ body {
     border: 1px solid black;
     display: flex;
     align-content: stretch;
+    justify-items: stretch;
+    justify-items: center;
 }
 
 /* card box */ 
 
 #card-div {
     width: 70%;
-    display: flex;
+    display: grid;
+    grid-template-columns: 270px 270px 270px;
+
 }
 
 .card {
@@ -280,7 +284,6 @@ body {
 
 .map-div {
     width: 50%;
-
     img {
         border-radius: 25px;
         width: 100%;

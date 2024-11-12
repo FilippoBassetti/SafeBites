@@ -1,13 +1,31 @@
 const restaurants = [
     {
         name: "UVA E MENTA",
-        image: 'img/placeholder_1.png',
+        image: 'uva_e_menta.png',
         address: "123 Street Name",
         category: "Italian",
         cost: "$$",
         tags: ["pizza", "birra", "hamburger"],
         isFavorite: false
-    }
+    },
+    {
+        title: "KORALLO",
+        image: "korallo.png",
+        address: "456 Another St",
+        category: "Pizza",
+        cost: "$$$",
+        tags: ["pizza", "gelato"],
+        isFavorite: true
+      },
+      {
+        title: "PARA TODOS",
+        image: "para_todos.png",
+        address: "789 Some Ave",
+        category: "Mexican",
+        cost: "$",
+        tags: ["tacos", "beer"],
+        isFavorite: false
+      },
 ]
 
 function generateCard(restaurant) {
@@ -19,7 +37,7 @@ function generateCard(restaurant) {
 
     const cardImg = document.createElement("div");
     cardImg.classList.add("card-img");
-    cardImg.style.backgroundImage = 'url(${restaurant.image})';
+    cardImg.style.backgroundImage = `url(img/restaurants_tmp/${restaurant.image})`;
     console.log(restaurant.image);
 
     cardTop.appendChild(cardImg);
