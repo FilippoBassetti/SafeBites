@@ -207,9 +207,9 @@ body {
     justify-content: space-between;
 }
 
-.star-checkbox {
-    /* */ 
-}
+/*.star-checkbox {
+     
+}*/
 
 .star-checkbox input[type="checkbox"] {
     appearance: none;
