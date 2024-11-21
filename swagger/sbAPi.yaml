@@ -10,84 +10,303 @@ servers:
   description: SwaggerHub API Auto Mocking
 - url: http://localhost:8000/api/v1
   description: Localhost
-tags:
-- name: admins
-  description: Secured Admin-only calls
-- name: developers
-  description: Operations available to regular developers
 paths:
-  /inventory:
+  /restaurants:
     get:
-      tags:
-      - developers
-      summary: searches inventory
-      description: |
-        By passing in the appropriate options, you can search for
-        available inventory in the system
-      operationId: searchInventory
+      summary: View all restaurants or filter by category
+      description: Gets the list of all restaurants or filters them by category using
+        a query string.
       parameters:
-      - name: searchString
+      - name: category
         in: query
-        description: pass an optional search string for looking up inventory
+        description: The category to filter restaurants by.
         required: false
         style: form
         explode: true
         schema:
           type: string
-      - name: skip
-        in: query
-        description: number of records to skip for pagination
-        required: false
-        style: form
-        explode: true
-        schema:
-          minimum: 0
-          type: integer
-          format: int32
-      - name: limit
-        in: query
-        description: maximum number of records to return
-        required: false
-        style: form
-        explode: true
-        schema:
-          maximum: 50
-          minimum: 0
-          type: integer
-          format: int32
       responses:
         "200":
-          description: search results matching criteria
+          description: Collection of restaurants (filtered by category if provided)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InventoryItem'
-        "400":
-          description: bad input parameter
+                  $ref: '#/components/schemas/Restaurant'
+        "404":
+          description: No restaurants found for the specified category.
     post:
-      tags:
-      - admins
-      summary: adds an inventory item
-      description: Adds an item to the system
-      operationId: addInventory
+      summary: Register a new restaurant
+      description: Creates a new restaurant in the system.
       requestBody:
-        description: Inventory item to add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InventoryItem'
+              $ref: '#/components/schemas/Restaurant'
+        required: true
       responses:
         "201":
-          description: item created
+          description: Restaurant created. Link in the Location header
+          headers:
+            Location:
+              description: Link to the newly created restaurant.
+              style: simple
+              explode: false
+              schema:
+                type: string
+  /restaurants/{id}:
+    get:
+      summary: restaurant by id
+      description: Gets the restaurant with a specific id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: restaurant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Restaurant'
+        "404":
+          description: No restaurants found with the specific name.
+    put:
+      summary: Update a restaurant by ID
+      description: Updates the details of a specific restaurant by their ID.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the restaurant to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Restaurant'
+        required: true
+      responses:
+        "200":
+          description: restaurant updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        "404":
+          description: Restaurant not found.
         "400":
-          description: "invalid input, object invalid"
-        "409":
-          description: an existing item already exists
+          description: Invalid input.
+    delete:
+      summary: Delete a restaurant by ID
+      description: Removes a specific restaurant from the system.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the restaurant to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Restaurant deleted successfully (No Content).
+        "404":
+          description: Restaurant not found.
+  /users:
+    post:
+      summary: Create a new user
+      description: Creates a new user in the system.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "201":
+          description: User created successfully.
+          headers:
+            Location:
+              description: URL to access the newly created user.
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: Invalid input.
+  /users/{id}:
+    get:
+      summary: Get a user by ID
+      description: Retrieves details of a specific user by their ID.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: User details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "404":
+          description: User not found.
+    put:
+      summary: Update a user by ID
+      description: Updates the details of a specific user by their ID.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the user to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "200":
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "404":
+          description: User not found.
+        "400":
+          description: Invalid input.
+    delete:
+      summary: Delete a user by ID
+      description: Removes a specific user from the system.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the user to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: User deleted successfully (No Content).
+        "404":
+          description: User not found.
+  /users/{id}/lists:
+    get:
+      summary: Get a user's lists by ID
+      description: Retrieves the lists of user by their ID.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: User details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/List'
+        "404":
+          description: User not found.
+    post:
+      summary: Register a new List
+      description: Creates a new List in the user.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+        required: true
+      responses:
+        "201":
+          description: List created. Link in the Location header
+          headers:
+            Location:
+              description: Link to the newly created list.
+              style: simple
+              explode: false
+              schema:
+                type: string
+        "404":
+          description: User not found.
+  /users/{id}/lists/{name}:
+    get:
+      summary: Get a user's lists by ID
+      description: Retrieves the lists of user by their ID.
+      parameters:
+      - name: id
+        in: path
+        description: The unique ID of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: name
+        in: path
+        description: The name of the list to retrieve.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: User details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/List'
+        "404":
+          description: User not found.
 components:
   schemas:
-    Student:
+    User:
       required:
       - email
       - id
@@ -103,13 +322,14 @@ components:
         username:
           type: string
           description: username
-    Restaurants:
+    Restaurant:
       required:
       - adress
       - category
       - email
       - id
       - name
+      - rating
       type: object
       properties:
         id:
@@ -127,6 +347,21 @@ components:
         category:
           type: string
           description: type of gnam gnam place of the activity
+    List:
+      required:
+      - name
+      - restaurants
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the restaurant
+        restaurants:
+          type: array
+          description: An array of restaurant IDs in this list.
+          items:
+            type: integer
+            description: The ID of a restaurant.
     Dish:
       required:
       - id
