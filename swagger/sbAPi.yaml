@@ -274,7 +274,7 @@ paths:
           description: User not found.
   /users/{id}/lists/{name}:
     get:
-      summary: Get a user's lists by ID
+      summary: Get a user's lists by ID and name of the list
       description: Retrieves the lists of user by their ID.
       parameters:
       - name: id
