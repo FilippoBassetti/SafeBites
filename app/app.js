@@ -2,11 +2,16 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
+
+const restaurants = require('./restaurants.js');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 
+
+app.use('/api/v1/restaurants', restaurants);
 
 /* Default 404 handler */
 app.use((req, res) => {
