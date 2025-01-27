@@ -218,92 +218,6 @@ paths:
           description: User deleted successfully (No Content).
         "404":
           description: User not found.
-  /users/{id}/lists:
-    get:
-      summary: Get a user's lists by ID
-      description: Retrieves the lists of user by their ID.
-      parameters:
-      - name: id
-        in: path
-        description: The unique ID of the user.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      responses:
-        "200":
-          description: User details retrieved successfully.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/List'
-        "404":
-          description: User not found.
-    post:
-      summary: Register a new List
-      description: Creates a new List in the user.
-      parameters:
-      - name: id
-        in: path
-        description: The unique ID of the user.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/List'
-        required: true
-      responses:
-        "201":
-          description: List created. Link in the Location header
-          headers:
-            Location:
-              description: Link to the newly created list.
-              style: simple
-              explode: false
-              schema:
-                type: string
-        "404":
-          description: User not found.
-  /users/{id}/lists/{name}:
-    get:
-      summary: Get a user's lists by ID and name of the list
-      description: Retrieves the lists of user by their ID.
-      parameters:
-      - name: id
-        in: path
-        description: The unique ID of the user.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      - name: name
-        in: path
-        description: The name of the list to retrieve.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: User details retrieved successfully.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/List'
-        "404":
-          description: User not found.
 components:
   schemas:
     User:
@@ -326,15 +240,20 @@ components:
       required:
       - adress
       - category
+      - dishes
       - email
       - id
       - name
+      - opening_days
+      - opening_hours
+      - price
+      - profile_url
       - rating
       type: object
       properties:
         id:
-          type: integer
-          description: ID of the restaurant
+          type: string
+          description: ID of the restaurant (string for mongoDB compatibility)
         email:
           type: string
           description: Email address of the restaurant
@@ -343,34 +262,40 @@ components:
           description: Name of the restaurant
         adress:
           type: string
-          description: adress of the restaurant
+          description: Address of the restaurant
         category:
-          type: string
-          description: type of gnam gnam place of the activity
-    List:
-      required:
-      - name
-      - restaurants
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the restaurant
-        restaurants:
           type: array
-          description: An array of restaurant IDs in this list.
+          description: A list of categories that describe the type of restaurant
           items:
-            type: integer
-            description: The ID of a restaurant.
-    Dish:
-      required:
-      - id
-      - name
-      type: object
-      properties:
-        id:
-          type: integer
-          description: ID of the dish
-        name:
+            type: string
+        rating:
+          maximum: 5
+          minimum: 0
+          type: number
+          description: Rating of the restaurant
+        price:
           type: string
-          description: name of the dish
+          description: Price range of the restaurant
+        opening_hours:
+          type: array
+          description: A list of all opening hours
+          items:
+            maxItems: 2
+            minItems: 2
+            type: array
+            items:
+              type: integer
+        opening_days:
+          type: array
+          description: A list of all days where it is open
+          items:
+            maxItems: 7
+            type: integer
+        dishes:
+          type: array
+          description: 'A list of dishes offered by the restaurant '
+          items:
+            type: string
+        profile_url:
+          type: string
+          description: ' Url of the Restaurant profile prictur for frontend'
