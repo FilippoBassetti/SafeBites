@@ -111,37 +111,6 @@ router.delete('/:id', async (req, res) => {
 });
 
 
-router.use('/by-user/:user_id', async (req, res, next) => {
-    // https://mongoosejs.com/docs/api.html#model_Model.findById
-    let restaurant = await Restaurant.findOne({ user_id: req.params.user_id }).exec();
-    if (!restaurant) {
-        res.status(404).send()
-        console.log('restaurant not found')
-        return;
-    }
-    req['restaurant'] = restaurant;
-    next()
-});
-
-router.get('/by-user/:user_id', async (req, res) => {
-    let restaurant = req['restaurant'];
-    res.status(200).json({
-        self: '/api/v1/restaurants/' + restaurant._id,
-        user_id: restaurant.user_id,
-        email: restaurant.email,
-        name: restaurant.name,
-        address: restaurant.address,
-        category: restaurant.category,
-        rating: restaurant.rating,
-        price: restaurant.price,
-        opening_hours: restaurant.opening_hours,
-        opening_days: restaurant.opening_days,
-        dishes: restaurant.dishes,
-        profile_url: restaurant.profile_url
-    });
-});
-
-
 router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
@@ -196,6 +165,36 @@ router.post('', async (req, res) => {
         console.error('Error saving restaurant:', error);
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
+});
+
+router.use('/by-user/:user_id', async (req, res, next) => {
+    // https://mongoosejs.com/docs/api.html#model_Model.findById
+    let restaurant = await Restaurant.find({ user_id: req.params.user_id }).exec();
+    if (!restaurant) {
+        res.status(404).send()
+        console.log('restaurant not found')
+        return;
+    }
+    req['restaurant'] = restaurant;
+    next()
+});
+
+router.get('/by-user/:user_id', async (req, res) => {
+    let restaurant = req['restaurant'];
+    res.status(200).json({
+        self: '/api/v1/restaurants/' + restaurant._id,
+        user_id: restaurant.user_id,
+        email: restaurant.email,
+        name: restaurant.name,
+        address: restaurant.address,
+        category: restaurant.category,
+        rating: restaurant.rating,
+        price: restaurant.price,
+        opening_hours: restaurant.opening_hours,
+        opening_days: restaurant.opening_days,
+        dishes: restaurant.dishes,
+        profile_url: restaurant.profile_url
+    });
 });
 
 
