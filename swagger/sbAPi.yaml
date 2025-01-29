@@ -16,15 +16,17 @@ servers:
 paths:
   /restaurants:
     get:
-      summary: View all restaurants or filter by category
+      summary: View all restaurants or filter by categories
       description: Gets the list of all restaurants or filters them by category using a query string.
       parameters:
-        - in: query
-          name: category
+        - name: categories
+          in: query
+          description: List of categories to filter restaurants by.
           required: false
-          description: The category to filter restaurants by.
           schema:
-            type: string
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: Collection of restaurants (filtered by category if provided)
@@ -56,14 +58,14 @@ paths:
     
   /restaurants/{id}:
     get:
-      summary: restaurant by id
-      description: Gets the restaurant with a specific id
+      summary: Get restaurant by ID
+      description: Gets the restaurant with a specific ID
       parameters:
         - name: id
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         "200":
           description: restaurant
@@ -83,7 +85,7 @@ paths:
           required: true
           description: The unique ID of the restaurant to update.
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -110,12 +112,31 @@ paths:
           required: true
           description: The unique ID of the restaurant to delete.
           schema:
-            type: integer
+            type: string
       responses:
         "204":
           description: Restaurant deleted successfully (No Content).
         "404":
           description: Restaurant not found.
+  /restaurants/by-user/{user_id}:
+    get:
+      summary: get a restaurant by user_id
+      description: Gets the restaurant with of specific user with the user_id
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: restaurant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        "404":
+          description: No restaurants found with the specific name.
   /users:
     post:
       summary: Create a new user
@@ -151,7 +172,7 @@ paths:
           required: true
           description: The unique ID of the user.
           schema:
-            type: integer
+            type: string
       responses:
         "200":
           description: User details retrieved successfully.
@@ -171,7 +192,7 @@ paths:
           required: true
           description: The unique ID of the user to update.
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -198,7 +219,7 @@ paths:
           required: true
           description: The unique ID of the user to delete.
           schema:
-            type: integer
+            type: string
       responses:
         "204":
           description: User deleted successfully (No Content).
@@ -217,7 +238,7 @@ components:
         - user_type
       properties:
         id:
-          type: integer
+          type: string
           description: 'ID of the user'
         email:
           type: string
@@ -239,9 +260,10 @@ components:
       type: object
       required:
         - id
+        - user_id
         - email
         - name
-        - adress
+        - address
         - category
         - rating
         - price
@@ -253,13 +275,16 @@ components:
         id:
           type: string
           description: 'ID of the restaurant (string for mongoDB compatibility)'
+        user_id:
+          type: string
+          description: 'The id of the user associated to the restaurant for authentication'
         email:
           type: string
           description: 'Email address of the restaurant'
         name: 
           type: string
           description: 'Name of the restaurant'
-        adress: 
+        address: 
           type: string 
           description: 'Address of the restaurant'
         category: 
@@ -288,7 +313,8 @@ components:
           type: array 
           description: 'A list of all days where it is open'
           items:
-            type: integer
+            type: boolean
+            minItems: 7
             maxItems: 7
         dishes: 
           type: array
@@ -298,4 +324,3 @@ components:
         profile_url:
           type: string
           description: ' Url of the Restaurant profile prictur for frontend'
- 
