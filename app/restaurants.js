@@ -2,37 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Restaurant = require('./models/restaurant'); // get our mongoose model
 
-/*
-router.get('', async (req, res) => {
-    try {
-        const category = req.query.category; // querry parametr
-
-        let restaurants;
-        if (category) {
-            // If category, return restaurants by cat
-            restaurants = await Restaurant.find({ category: category });
-        } else {
-            // If no category, return all restaurants
-            restaurants = await Restaurant.find({});
-        }
-
-        restaurants = restaurants.map((restaurant) => {
-            return {
-                self: '/api/v1/restaurants/' + restaurant._id,
-                email: restaurant.email,
-                name: restaurant.name,
-                address: restaurant.address,
-                category: restaurant.category
-            };
-        });
-
-        res.status(200).json(restaurants);
-    } catch (error) {
-        console.error('Error fetching restaurants:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-*/
 
 router.get('', async (req, res) => {
     try {
@@ -169,7 +138,7 @@ router.post('', async (req, res) => {
 
 router.use('/by-user/:user_id', async (req, res, next) => {
     // https://mongoosejs.com/docs/api.html#model_Model.findById
-    let restaurant = await Restaurant.find({ user_id: req.params.user_id }).exec();
+    let restaurant = await Restaurant.findOne({ user_id: req.params.user_id }).exec();
     if (!restaurant) {
         res.status(404).send()
         console.log('restaurant not found')

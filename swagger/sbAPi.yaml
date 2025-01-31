@@ -232,7 +232,8 @@ components:
       required:
         - id
         - email
-        - username
+        - password
+        - user_name
         - name
         - family_name
         - user_type
@@ -243,7 +244,10 @@ components:
         email:
           type: string
           description: 'Email address of the user'
-        username: 
+        password: 
+          type: string
+          description: 'User  password for login'  
+        user_name: 
           type: string
           description: 'username'
         name: 
