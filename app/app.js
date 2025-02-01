@@ -11,9 +11,18 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 
+app.use(
+
+    (req, res, next) => {
+        console.log(`recived ${req.method + " " + req.hostname + req.url}`);
+        next();
+    }
+)
 
 app.use('/api/v1/restaurants', restaurants);
 app.use('/api/v1/users', users);
+
+
 
 /* Default 404 handler */
 app.use((req, res) => {

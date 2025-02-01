@@ -3,6 +3,63 @@ const router = express.Router();
 const Restaurant = require('./models/restaurant'); // get our mongoose model
 
 
+router.get('/by-user/:user', async (req, res) => {
+    try {
+        const restaurants = await Restaurant.find({ user: req.params.user }).exec();
+
+        if (!restaurants || restaurants.length === 0) {
+            return res.status(404).json({ error: 'No restaurants found for this user' });
+        }
+
+        // Map the response for consistency
+        const response = restaurants.map((restaurant) => ({
+            self: '/api/v1/restaurants/' + restaurant._id,
+            user: restaurant.user,
+            email: restaurant.email,
+            name: restaurant.name,
+            address: restaurant.address,
+            category: restaurant.category,
+            rating: restaurant.rating,
+            price: restaurant.price,
+            opening_hours: restaurant.opening_hours,
+            opening_days: restaurant.opening_days,
+            dishes: restaurant.dishes,
+            profile_url: restaurant.profile_url
+        }));
+
+        res.status(200).json(response);
+    } catch (error) {
+        console.error('Error fetching restaurants by user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    // https://mongoosejs.com/docs/api.html#model_Model.findById
+    let restaurant = await Restaurant.findById(req.params.id).exec();
+    if (!restaurant) {
+        res.status(404).send()
+        console.log('restaurant not found')
+        return;
+    }
+
+    res.status(200).json({
+        self: '/api/v1/restaurants/' + restaurant._id,
+        user: restaurant.user,
+        email: restaurant.email,
+        name: restaurant.name,
+        address: restaurant.address,
+        category: restaurant.category,
+        rating: restaurant.rating,
+        price: restaurant.price,
+        opening_hours: restaurant.opening_hours,
+        opening_days: restaurant.opening_days,
+        dishes: restaurant.dishes,
+        profile_url: restaurant.profile_url
+    });
+});
+
+
 router.get('', async (req, res) => {
     try {
         const categories = req.query.categories; // querry parametr
@@ -21,7 +78,7 @@ router.get('', async (req, res) => {
         restaurants = restaurants.map((restaurant) => {
             return {
                 self: '/api/v1/restaurants/' + restaurant._id,
-                user_id: restaurant.user_id,
+                user: restaurant.user_id,
                 email: restaurant.email,
                 name: restaurant.name,
                 address: restaurant.address,
@@ -42,57 +99,19 @@ router.get('', async (req, res) => {
     }
 });
 
-router.use('/:id', async (req, res, next) => {
-    // https://mongoosejs.com/docs/api.html#model_Model.findById
-    let restaurant = await Restaurant.findById(req.params.id).exec();
-    if (!restaurant) {
-        res.status(404).send()
-        console.log('restaurant not found')
-        return;
-    }
-    req['restaurant'] = restaurant;
-    next()
-});
-
-router.get('/:id', async (req, res) => {
-    let restaurant = req['restaurant'];
-    res.status(200).json({
-        self: '/api/v1/restaurants/' + restaurant._id,
-        user_id: restaurant.user_id,
-        email: restaurant.email,
-        name: restaurant.name,
-        address: restaurant.address,
-        category: restaurant.category,
-        rating: restaurant.rating,
-        price: restaurant.price,
-        opening_hours: restaurant.opening_hours,
-        opening_days: restaurant.opening_days,
-        dishes: restaurant.dishes,
-        profile_url: restaurant.profile_url
-    });
-});
-
-router.delete('/:id', async (req, res) => {
-    let restaurant = req['restaurant'];
-    await Restaurant.deleteOne({ _id: req.params.id });
-    console.log('restaurant removed')
-    res.status(204).send()
-});
-
-
 router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
         // Check if all required fields are completed 
-        const requiredFields = ['user_id', 'email', 'name', 'address', 'category', 'price', 'opening_hours', 'opening_days', 'profile_url'];
+        const requiredFields = ['user', 'email', 'name', 'address', 'category', 'price', 'opening_hours', 'opening_days', 'profile_url'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
-                return res.status(400).json({ error: 'Missing required field: ${field}' });
+                return res.status(400).json({ error: `Missing required field: ${field}` });
             }
         }
 
         let restaurant = new Restaurant({
-            user_id: req.body.user_id, 
+            user: req.body.user, 
             email: req.body.email,
             name: req.body.name,
             address: req.body.address,
@@ -112,7 +131,7 @@ router.post('', async (req, res) => {
         const responseData = {
             id: restaurant._id.toString(), 
             self: '/api/v1/restaurants/${restaurant._id}',
-            user_id: restaurant.user_id,
+            user: restaurant.user,
             email: restaurant.email,
             name: restaurant.name,
             address: restaurant.address,
@@ -136,35 +155,25 @@ router.post('', async (req, res) => {
     }
 });
 
-router.use('/by-user/:user_id', async (req, res, next) => {
-    // https://mongoosejs.com/docs/api.html#model_Model.findById
-    let restaurant = await Restaurant.findOne({ user_id: req.params.user_id }).exec();
+
+router.delete('/:id', async (req, res) => {
+    let restaurant = await Booklending.findById(req.params.id).exec();;
     if (!restaurant) {
         res.status(404).send()
         console.log('restaurant not found')
         return;
     }
-    req['restaurant'] = restaurant;
-    next()
+    await restaurant.deleteOne();
+    console.log('restaurant removed')
+    res.status(204).send()
 });
 
-router.get('/by-user/:user_id', async (req, res) => {
-    let restaurant = req['restaurant'];
-    res.status(200).json({
-        self: '/api/v1/restaurants/' + restaurant._id,
-        user_id: restaurant.user_id,
-        email: restaurant.email,
-        name: restaurant.name,
-        address: restaurant.address,
-        category: restaurant.category,
-        rating: restaurant.rating,
-        price: restaurant.price,
-        opening_hours: restaurant.opening_hours,
-        opening_days: restaurant.opening_days,
-        dishes: restaurant.dishes,
-        profile_url: restaurant.profile_url
-    });
-});
+router.put('/:id', async(req, res) => {
+    let restaurant = 
+    await Restaurant.findByIdAndUpdate({ _id: req.params.id });
+    console.log('restaurant removed')
+    res.status(204).send()  
+})
 
 
 module.exports = router;

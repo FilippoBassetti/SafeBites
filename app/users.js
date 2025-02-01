@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('./models/users'); // get our mongoose model
 
@@ -25,6 +26,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
 // Create a new user
 router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
@@ -36,9 +38,12 @@ router.post('', async (req, res) => {
             }
         }
 
+        // Hash password before saving
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
         let user = new User({
             email: req.body.email,
-            password: req.body.password,
+            password: hashedPassword,
             user_name: req.body.user_name,
             name: req.body.name,
             family_name: req.body.family_name,
@@ -65,6 +70,13 @@ router.post('', async (req, res) => {
         console.error('Error saving user:', error);
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
+});
+
+router.delete('/:id', async (req, res) => {
+    let user= req['user'];
+    await User.deleteOne({ _id: req.params.id });
+    console.log('user removed')
+    res.status(204).send()
 });
 
 module.exports = router;
