@@ -3,9 +3,9 @@ const router = express.Router();
 const Restaurant = require('./models/restaurant'); // get our mongoose model
 
 
-router.get('/by-user/:user', async (req, res) => {
+router.get('/by-user/:user_id', async (req, res) => {
     try {
-        const restaurants = await Restaurant.find({ user: req.params.user }).exec();
+        const restaurants = await Restaurant.find({ user_id: req.params.user_id }).exec();
 
         if (!restaurants || restaurants.length === 0) {
             return res.status(404).json({ error: 'No restaurants found for this user' });
@@ -14,7 +14,7 @@ router.get('/by-user/:user', async (req, res) => {
         // Map the response for consistency
         const response = restaurants.map((restaurant) => ({
             self: '/api/v1/restaurants/' + restaurant._id,
-            user: restaurant.user,
+            user_id: restaurant.user_id,
             email: restaurant.email,
             name: restaurant.name,
             address: restaurant.address,
@@ -45,7 +45,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json({
         self: '/api/v1/restaurants/' + restaurant._id,
-        user: restaurant.user,
+        user_id: restaurant.user_id,
         email: restaurant.email,
         name: restaurant.name,
         address: restaurant.address,
@@ -78,7 +78,7 @@ router.get('', async (req, res) => {
         restaurants = restaurants.map((restaurant) => {
             return {
                 self: '/api/v1/restaurants/' + restaurant._id,
-                user: restaurant.user_id,
+                user_id: restaurant.user_id,
                 email: restaurant.email,
                 name: restaurant.name,
                 address: restaurant.address,
@@ -103,7 +103,7 @@ router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
         // Check if all required fields are completed 
-        const requiredFields = ['user', 'email', 'name', 'address', 'category', 'price', 'opening_hours', 'opening_days', 'profile_url'];
+        const requiredFields = ['user_id', 'email', 'name', 'address', 'category', 'price', 'opening_hours', 'opening_days', 'profile_url'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
                 return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -111,7 +111,7 @@ router.post('', async (req, res) => {
         }
 
         let restaurant = new Restaurant({
-            user: req.body.user, 
+            user_id: req.body.user_id, 
             email: req.body.email,
             name: req.body.name,
             address: req.body.address,
@@ -131,7 +131,7 @@ router.post('', async (req, res) => {
         const responseData = {
             id: restaurant._id.toString(), 
             self: '/api/v1/restaurants/${restaurant._id}',
-            user: restaurant.user,
+            user_id: restaurant.user_id,
             email: restaurant.email,
             name: restaurant.name,
             address: restaurant.address,

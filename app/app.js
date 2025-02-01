@@ -23,7 +23,6 @@ app.use('/api/v1/restaurants', restaurants);
 app.use('/api/v1/users', users);
 
 
-
 /* Default 404 handler */
 app.use((req, res) => {
     res.status(404);
