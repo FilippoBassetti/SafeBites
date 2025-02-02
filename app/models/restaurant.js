@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 module.exports = mongoose.model('Restaurant', new Schema({
-    user_id: { type: String, required: true },
-    email: { type: String, required: true },
+    user_id: { type: String, required: true, unique: true },
+    email: { type: String, required: true},
     name: { type: String, required: true },
     address: { type: String, required: true },
     category: { type: [String], required: true }, // Array of strings
