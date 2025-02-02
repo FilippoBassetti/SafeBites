@@ -182,7 +182,6 @@ paths:
                 $ref: '#/components/schemas/User'
         "404":
           description: User not found.
-
     put:
       summary: Update a user by ID
       description: Updates the details of a specific user by their ID.
@@ -225,6 +224,107 @@ paths:
           description: User deleted successfully (No Content).
         "404":
           description: User not found.
+  
+  /review/{rest_id}:
+    get:
+      summary: View all Review by restaurant
+      description: Gets the list of all review of a restaurant
+      parameters:
+        - name: rest_id
+          in: path
+          description: the id of the reviewed restaurant 
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          description: the id of the user who left the review
+          required: false
+          schema: 
+            type: string
+      responses:
+        "200":
+          description: Collection of reviews (filtered by restaurant and user if provided)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        "404":
+          description: No review found for specific restaurant.
+    put:
+      summary: Update a review of a restaurant by a user
+      description: update the user's restuarant's review
+      parameters:
+        - name: rest_id
+          in: path
+          description: the id of the reviewed restaurant 
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          description: the id of the user who left the review
+          required: true
+          schema: 
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        "200":
+          description: Review updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        "404":
+          description: Review not found.
+        "400":
+          description: Invalid input.
+    delete:
+      summary: delete user's restaurant's review
+      description: delete user's restaurant's review
+      parameters:
+        - name: rest_id
+          in: path
+          description: the id of the reviewed restaurant 
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          description: the id of the user who left the review
+          required: true
+          schema: 
+            type: string
+      responses:
+        "204":
+          description: Review deleted successfully (No Content).
+        "404":
+          description: Review matching between restaurant and user not found.
+  /review:
+    post:
+      summary: review for a restaurant by a user
+      description: Creates a new review for a restaurant by a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        "201":
+          description: Review created. Link in the Location header
+          headers:
+            Location:
+              description: Link to the newly created review.
+              schema:
+                type: string
 components:
   schemas:
     User:
@@ -328,3 +428,34 @@ components:
         profile_url:
           type: string
           description: ' Url of the Restaurant profile prictur for frontend'
+    Rating:
+      required:
+        - rest_id
+        - user_id
+        - rating
+      properties:
+        rest_id:
+          type: string
+          description: 'ID of the rated restaurant'
+        user_id:
+          type: string
+          description: 'Id of the user that left the rating'
+        rating: 
+          type: integer
+          minimum: 0
+          maximum: 5
+    Review:
+      required:
+        - rest_id
+        - user_id
+        - text
+      properties:
+        rest_id:
+          type: string
+          description: 'ID of the reviewed restaurant'
+        user_id:
+          type: string
+          description: 'Id of the user that left the review'
+        text: 
+          type: string
+          description: 'text of the review'
