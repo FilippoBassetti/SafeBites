@@ -8,7 +8,10 @@ router.get('/:rest_id', async (req, res) => {
         let reviews;
         // Check for user_id query parameter
         if (req.query.user_id) {
-            reviews = await Review.find({ rest_id: req.params.rest_id, user_id: req.query.user_id }).exec();
+            reviews = await Review.find({ 
+                rest_id: req.params.rest_id, 
+                user_id: req.query.user_id 
+            }).exec();
         } else {
             reviews = await Review.find({ rest_id: req.params.rest_id });
         }
@@ -159,8 +162,7 @@ router.delete('/:rest_id', async (req, res) => {
         await review.deleteOne();
         console.log('review removed')
         res.status(204).send()
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error deleting review:', error);
 
         // Handle validation errors

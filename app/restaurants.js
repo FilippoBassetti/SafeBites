@@ -161,7 +161,7 @@ router.post('', async (req, res) => {
 
 
 router.delete('/:id', async (req, res) => {
-    let restaurant = await Booklending.findById(req.params.id).exec();;
+    let restaurant = await Restaurant.findById(req.params.id).exec();;
     if (!restaurant) {
         res.status(404).send()
         console.log('restaurant not found')
