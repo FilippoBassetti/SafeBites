@@ -2,9 +2,13 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
+const authentication = require('./authentication.js');
+const tokenChecker = require('./tokenChecker.js');
 
 const restaurants = require('./restaurants.js');
 const users = require('./users.js')
+const reviews = require('./reviews.js')
+const ratings = require('./ratings.js')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,9 +23,44 @@ app.use(
     }
 )
 
+app.use('/api/v1/authentications', authentication);
+
+app.use('/api/v1/restaurants', (req, res, next) => {
+    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else {
+        next(); // Allow GET without authentication
+    }
+});
+
+app.use('/api/v1/users', (req, res, next) => {
+    if (['PUT', 'DELETE'].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else {
+        next(); // Allow GET without authentication
+    }
+});
+
+app.use('/api/v1/reviews', (req, res, next) => {
+    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else {
+        next(); // Allow GET without authentication
+    }
+});
+
+app.use('/api/v1/ratings', (req, res, next) => {
+    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else {
+        next(); // Allow GET without authentication
+    }
+});
+
 app.use('/api/v1/restaurants', restaurants);
 app.use('/api/v1/users', users);
-
+app.use('/api/v1/reviews', reviews);
+app.use('/api/v1/ratings', ratings);
 
 /* Default 404 handler */
 app.use((req, res) => {
