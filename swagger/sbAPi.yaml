@@ -14,9 +14,7 @@ paths:
   /restaurants:
     get:
       summary: Retrieve restaurants with optional filters
-      description: "Returns a list of restaurants. You can filter results based on\
-        \ categories, dishes, keywords, price range, rating, or whether the restaurant\
-        \ is open at a specific time or day."
+      description: "Returns a list of restaurants. You can filter results based on categories, dishes, keywords, price range, rating, or whether the restaurant is open at a specific time or day."
       parameters:
       - name: categories
         in: query
@@ -58,8 +56,7 @@ paths:
           type: number
       - name: open_today
         in: query
-        description: "Filter restaurants open on a specific day (0 = Sunday, 6 = Saturday).(or\
-          \ 1 to 7)"
+        description: "Filter restaurants open on a specific day (0 = Sunday, 6 = Saturday).(or 1 to 7)"
         required: false
         style: form
         explode: true
@@ -308,8 +305,7 @@ paths:
   /rating/{rest_id}:
     get:
       summary: View all ratings for a restaurant
-      description: "Retrieves a list of all ratings for the specified restaurant.\
-        \ Optionally, filter by the user who left the rating."
+      description: "Retrieves a list of all ratings for the specified restaurant. Optionally, filter by the user who left the rating."
       parameters:
       - name: rest_id
         in: path

@@ -8,7 +8,7 @@ module.exports = mongoose.model('Restaurant', new Schema({
     address: { type: String, required: true },
     category: { type: [String], required: true }, // Array of strings
     rating: { type: Number, required: true, min: 0, max: 5 },
-    price: { type: String, required: true },
+    price: { type: Number, required: true, min: 1, max: 4 }, // [0-10, 10-20, 20-40, 40-60, 60-100, 100+]
     opening_hours: {
         type: [[Number]], // Array of arrays of numbers
         validate: {
