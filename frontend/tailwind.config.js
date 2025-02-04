@@ -2,9 +2,6 @@
 module.exports = {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   darkMode: false, // or 'media' or 'class'
-  theme: {
-    extend: {},
-  },
   variants: {
     extend: {},
   },
@@ -12,6 +9,8 @@ module.exports = {
     extend:{
       fontFamily: {
         oooh: ['Oooh Baby'],
+        agatholight: ['AgathoLight', 'sans-serif'],
+        agathobold: ['AgathoBold', 'sans-serif'],
       },
     },
   },

@@ -47,10 +47,10 @@
                         <div class="flex transition-transform duration-300 ease-in-out flex-nowrap"
                             :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
                             <div v-for="(slide, index) in slides" :key="index"
-                                class="w-full flex-shrink-0 h-96 flex items-center justify-center bg-pink-200 cursor-pointer hover:shadow-lg transition-shadow"
+                                class="w-full flex-shrink-0 h-96 flex items-center justify-center bg-pink-50 cursor-pointer hover:shadow-lg transition-shadow"
                                 @click="navigateTo(slide.route)">
                                 <div class="text-center p-8 -mt-2">
-                                    <p class="text-red-600 text-5xl">{{ slide.content }}</p>
+                                    <p class="text-red-600 text-5xl font-agathobold">{{ slide.content }}</p>
                                 </div>
                             </div>
                         </div>

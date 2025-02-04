@@ -27,7 +27,8 @@
                 </div>
             </div>
         </header>
-    <CarouselStructure />
+
+    
     <div class="flex flex-row">
       <div class="flex flex-wrap justify-evenly mt-8 w-3/5">
         <CardMainPage />
@@ -37,7 +38,9 @@
         <CardMainPage />
         <CardMainPage />
       </div>
-      <div class="bg-zinc-300 mt-12 rounded-xl w-2/5 mr-7"> SAS</div>
+      <div class="bg-zinc-300 mt-12 rounded-xl w-2/5 mr-7"> 
+        <img src="../../public/img/image 10.png" class="w-full h-full object-cover rounded-xl">
+      </div>
     </div>
   </div>
 
