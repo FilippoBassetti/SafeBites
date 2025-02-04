@@ -1,34 +1,98 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
-  title: "SafeBites OpenAPI 3.0"
+  title: SafeBites OpenAPI 3.0
   description: API for managing and researching restaurants
   license:
     name: MIT
+  version: 1.0.0
 servers:
-  # Added by API Auto Mocking Plugin
-  - url: https://virtserver.swaggerhub.com/filippo.bassetti/SafeBitesApi/1.0.0
-    description: SwaggerHub API Auto Mocking
-  - url: http://localhost:8000/api/v1
-    description: Localhost
-
+- url: https://virtserver.swaggerhub.com/filippo.bassetti/SafeBitesApi/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: http://localhost:8000/api/v1
+  description: Localhost
 paths:
   /restaurants:
     get:
-      summary: View all restaurants or filter by categories
-      description: Gets the list of all restaurants or filters them by category using a query string.
+      summary: Retrieve restaurants with optional filters
+      description: "Returns a list of restaurants. You can filter results based on\
+        \ categories, dishes, keywords, price range, rating, or whether the restaurant\
+        \ is open at a specific time or day."
       parameters:
-        - name: categories
-          in: query
-          description: List of categories to filter restaurants by.
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
+      - name: categories
+        in: query
+        description: Filter by restaurant categories
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: dishes
+        in: query
+        description: Filter by specific dishes offered by the restaurant.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: search
+        in: query
+        description: Search for restaurants containing specific keywords in any field.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: open_now
+        in: query
+        description: Filter restaurants open at a specific hour.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+      - name: open_today
+        in: query
+        description: "Filter restaurants open on a specific day (0 = Sunday, 6 = Saturday).(or\
+          \ 1 to 7)"
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: price
+        in: query
+        description: "Filter by price range, index of the price array."
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: rating
+        in: query
+        description: Show restaurants with a rating equal to or higher than the given
+          value.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+      - name: certificate
+        in: query
+        description: Show only restaurants that own a valid AIC certificate
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
       responses:
         "200":
-          description: A collection of restaurants (filtered by category if provided).
+          description: "A list of restaurants matching the provided filters, if any."
           content:
             application/json:
               schema:
@@ -41,31 +105,35 @@ paths:
       summary: Register a new restaurant
       description: Creates a new restaurant in the system.
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Restaurant'
+        required: true
       responses:
         "201":
-          description: Restaurant created. The Location header contains a link to the newly created restaurant.
+          description: Restaurant created. The Location header contains a link to
+            the newly created restaurant.
           headers:
             Location:
               description: Link to the newly created restaurant.
+              style: simple
+              explode: false
               schema:
                 type: string
-
   /restaurants/{id}:
     get:
       summary: Get restaurant by ID
       description: Retrieves the restaurant with the specified ID.
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The unique ID of the restaurant.
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: The unique ID of the restaurant.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         "200":
           description: Restaurant found.
@@ -79,18 +147,20 @@ paths:
       summary: Update a restaurant by ID
       description: Updates the details of the specified restaurant.
       parameters:
-        - in: path
-          name: id
-          required: true
-          description: The unique ID of the restaurant to update.
-          schema:
-            type: string
-      requestBody:
+      - name: id
+        in: path
+        description: The unique ID of the restaurant to update.
         required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Restaurant'
+        required: true
       responses:
         "200":
           description: Restaurant updated successfully.
@@ -106,29 +176,32 @@ paths:
       summary: Delete a restaurant by ID
       description: Removes the specified restaurant from the system.
       parameters:
-        - in: path
-          name: id
-          required: true
-          description: The unique ID of the restaurant to delete.
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: The unique ID of the restaurant to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         "204":
           description: Restaurant deleted successfully (No Content).
         "404":
           description: Restaurant not found.
-
   /restaurants/by-user/{user_id}:
     get:
       summary: Get restaurant by user ID
       description: Gets the restaurant associated with the specified user ID.
       parameters:
-        - name: user_id
-          in: path
-          required: true
-          description: The unique ID of the user.
-          schema:
-            type: string
+      - name: user_id
+        in: path
+        description: The unique ID of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         "200":
           description: Restaurant found.
@@ -138,23 +211,24 @@ paths:
                 $ref: '#/components/schemas/Restaurant'
         "404":
           description: No restaurant found for the specified user ID.
-
   /users:
     post:
       summary: Create a new user
       description: Creates a new user in the system.
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+        required: true
       responses:
         "201":
           description: User created successfully.
           headers:
             Location:
               description: URL to access the newly created user.
+              style: simple
+              explode: false
               schema:
                 type: string
           content:
@@ -163,18 +237,19 @@ paths:
                 $ref: '#/components/schemas/User'
         "400":
           description: Invalid input.
-
   /users/{id}:
     get:
       summary: Get a user by ID
       description: Retrieves details of the specified user.
       parameters:
-        - in: path
-          name: id
-          required: true
-          description: The unique ID of the user.
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: The unique ID of the user.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         "200":
           description: User details retrieved successfully.
@@ -188,18 +263,20 @@ paths:
       summary: Update a user by ID
       description: Updates the details of the specified user.
       parameters:
-        - in: path
-          name: id
-          required: true
-          description: The unique ID of the user to update.
-          schema:
-            type: string
-      requestBody:
+      - name: id
+        in: path
+        description: The unique ID of the user to update.
         required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+        required: true
       responses:
         "200":
           description: User updated successfully.
@@ -215,12 +292,14 @@ paths:
       summary: Delete a user by ID
       description: Removes the specified user from the system.
       parameters:
-        - in: path
-          name: id
-          required: true
-          description: The unique ID of the user to delete.
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: The unique ID of the user to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         "204":
           description: User deleted successfully (No Content).
@@ -229,23 +308,29 @@ paths:
   /rating/{rest_id}:
     get:
       summary: View all ratings for a restaurant
-      description: Retrieves a list of all ratings for the specified restaurant. Optionally, filter by the user who left the rating.
+      description: "Retrieves a list of all ratings for the specified restaurant.\
+        \ Optionally, filter by the user who left the rating."
       parameters:
-        - name: rest_id
-          in: path
-          required: true
-          description: The ID of the rated restaurant.
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: false
-          description: The ID of the user who left the rating.
-          schema:
-            type: string
+      - name: rest_id
+        in: path
+        description: The ID of the rated restaurant.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: The ID of the user who left the rating.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
       responses:
         "200":
-          description: A collection of ratings (filtered by restaurant and user if provided).
+          description: A collection of ratings (filtered by restaurant and user if
+            provided).
           content:
             application/json:
               schema:
@@ -258,24 +343,28 @@ paths:
       summary: Update a rating for a restaurant by a user
       description: Updates the rating for the specified restaurant made by the user.
       parameters:
-        - name: rest_id
-          in: path
-          required: true
-          description: The ID of the rated restaurant.
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: true
-          description: The ID of the user who left the rating.
-          schema:
-            type: string
-      requestBody:
+      - name: rest_id
+        in: path
+        description: The ID of the rated restaurant.
         required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: The ID of the user who left the rating.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Rating'
+        required: true
       responses:
         "200":
           description: Rating updated successfully.
@@ -291,63 +380,73 @@ paths:
       summary: Delete a rating for a restaurant by a user
       description: Deletes the rating for the specified restaurant made by the user.
       parameters:
-        - name: rest_id
-          in: path
-          required: true
-          description: The ID of the rated restaurant.
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: true
-          description: The ID of the user who left the rating.
-          schema:
-            type: string
+      - name: rest_id
+        in: path
+        description: The ID of the rated restaurant.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: The ID of the user who left the rating.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
       responses:
         "204":
           description: Rating deleted successfully (No Content).
         "404":
           description: No matching rating found for the specified restaurant and user.
-
   /rating:
     post:
       summary: Create a rating for a restaurant
       description: Creates a new rating for a restaurant by a user.
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Rating'
+        required: true
       responses:
         "201":
-          description: Rating created. The Location header contains a link to the newly created rating.
+          description: Rating created. The Location header contains a link to the
+            newly created rating.
           headers:
             Location:
               description: Link to the newly created rating.
+              style: simple
+              explode: false
               schema:
                 type: string
-                
   /review/{rest_id}:
     get:
       summary: View all reviews for a restaurant
       description: Retrieves a list of all reviews for the specified restaurant.
       parameters:
-        - name: rest_id
-          in: path
-          required: true
-          description: The ID of the reviewed restaurant.
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: false
-          description: The ID of the user who left the review.
-          schema:
-            type: string
+      - name: rest_id
+        in: path
+        description: The ID of the reviewed restaurant.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: The ID of the user who left the review.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
       responses:
         "200":
-          description: A collection of reviews (filtered by restaurant and user if provided).
+          description: A collection of reviews (filtered by restaurant and user if
+            provided).
           content:
             application/json:
               schema:
@@ -360,24 +459,28 @@ paths:
       summary: Update a review for a restaurant by a user
       description: Updates a review for the specified restaurant made by the user.
       parameters:
-        - name: rest_id
-          in: path
-          required: true
-          description: The ID of the reviewed restaurant.
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: true
-          description: The ID of the user who left the review.
-          schema:
-            type: string
-      requestBody:
+      - name: rest_id
+        in: path
+        description: The ID of the reviewed restaurant.
         required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: The ID of the user who left the review.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Review'
+        required: true
       responses:
         "200":
           description: Review updated successfully.
@@ -393,189 +496,200 @@ paths:
       summary: Delete a review for a restaurant by a user
       description: Deletes the review for the specified restaurant made by the user.
       parameters:
-        - name: rest_id
-          in: path
-          required: true
-          description: The ID of the reviewed restaurant.
-          schema:
-            type: string
-        - name: user_id
-          in: query
-          required: true
-          description: The ID of the user who left the review.
-          schema:
-            type: string
+      - name: rest_id
+        in: path
+        description: The ID of the reviewed restaurant.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: The ID of the user who left the review.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
       responses:
         "204":
           description: Review deleted successfully (No Content).
         "404":
           description: No matching review found for the specified restaurant and user.
-
   /review:
     post:
       summary: Create a review for a restaurant
       description: Creates a new review for a restaurant by a user.
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Review'
+        required: true
       responses:
         "201":
-          description: Review created. The Location header contains a link to the newly created review.
+          description: Review created. The Location header contains a link to the
+            newly created review.
           headers:
             Location:
               description: Link to the newly created review.
+              style: simple
+              explode: false
               schema:
                 type: string
-
 components:
   schemas:
     User:
-      type: object
       required:
-        - id
-        - email
-        - password
-        - user_name
-        - name
-        - family_name
-        - user_type
+      - email
+      - family_name
+      - id
+      - name
+      - password
+      - user_name
+      - user_type
+      type: object
       properties:
         id:
           type: string
-          description: "ID of the user."
+          description: ID of the user.
         email:
           type: string
-          description: "Email address of the user."
+          description: Email address of the user.
         password:
           type: string
-          description: "User password for login."
+          description: User password for login.
         user_name:
           type: string
-          description: "Username."
+          description: Username.
         name:
           type: string
-          description: "First name of the user."
+          description: First name of the user.
         family_name:
           type: string
-          description: "Family name of the user."
+          description: Family name of the user.
         user_type:
           type: boolean
-          description: "Whether the user is a restaurant (true) or a normal user (false)."
-        
+          description: Whether the user is a restaurant (true) or a normal user (false).
     Restaurant:
-      type: object
       required:
-        - id
-        - user_id
-        - email
-        - name
-        - address
-        - category
-        - rating
-        - price
-        - opening_hours
-        - opening_days
-        - dishes
-        - profile_url
+      - address
+      - category
+      - certificate
+      - dishes
+      - email
+      - id
+      - name
+      - opening_days
+      - opening_hours
+      - price
+      - profile_url
+      - rating
+      - user_id
+      type: object
       properties:
         id:
           type: string
-          description: "ID of the restaurant (string for MongoDB compatibility)."
+          description: ID of the restaurant (string for MongoDB compatibility).
         user_id:
           type: string
-          description: "The ID of the user associated with the restaurant for authentication."
+          description: The ID of the user associated with the restaurant for authentication.
         email:
           type: string
-          description: "Email address of the restaurant."
+          description: Email address of the restaurant.
         name:
           type: string
-          description: "Name of the restaurant."
+          description: Name of the restaurant.
         address:
           type: string
-          description: "Address of the restaurant."
+          description: Address of the restaurant.
         category:
           type: array
+          description: A list of categories that describe the type of restaurant.
           items:
             type: string
-          description: "A list of categories that describe the type of restaurant."
         rating:
-          type: number
-          description: "Rating of the restaurant."
-          minimum: 0
           maximum: 5
+          minimum: 0
+          type: number
+          description: Rating of the restaurant.
         price:
-          type: string
-          description: "Price range of the restaurant."
+          maximum: 4
+          minimum: 0
+          type: integer
+          description: "Index of the price range of the restaurant. Based on this\
+            \ Array: [0-10, 10-20, 20-40, 40-60, 60-100, 100+]"
         opening_hours:
           type: array
-          description: "A list of opening hour time ranges. Each time range is an array with two integers [open, close]."
+          description: "A list of opening hour time ranges. Each time range is an\
+            \ array with two integers [open, close]."
           items:
+            maxItems: 2
+            minItems: 2
             type: array
             items:
               type: integer
-            minItems: 2
-            maxItems: 2
         opening_days:
+          maxItems: 7
+          minItems: 7
           type: array
-          description: "A list of booleans indicating whether the restaurant is open on each day of the week."
+          description: A list of booleans indicating whether the restaurant is open
+            on each day of the week.
           items:
             type: boolean
-          minItems: 7
-          maxItems: 7
         dishes:
           type: array
-          description: "A list of dishes offered by the restaurant. Each dish is represented as an object containing a name and a URL."
+          description: A list of dishes offered by the restaurant. Each dish is represented
+            as an object containing a name and a URL.
           items:
-            type: object
-            required:
-              - name
-              - url
-            properties:
-              name:
-                type: string
-                description: "The name of the dish."
-              url:
-                type: string
-                description: "The URL associated with the dish."
-        profile_url:
-          type: string
-          description: "URL of the restaurant profile picture for frontend."
-                
+            $ref: '#/components/schemas/Restaurant_dishes'
+        certificate:
+          type: boolean
+          description: Indicates if the restaurant holds an AIC certification.
     Rating:
-      type: object
       required:
-        - rest_id
-        - user_id
-        - rating
+      - rating
+      - rest_id
+      - user_id
+      type: object
       properties:
         rest_id:
           type: string
-          description: "ID of the rated restaurant."
+          description: ID of the rated restaurant.
         user_id:
           type: string
-          description: "ID of the user that left the rating."
+          description: ID of the user that left the rating.
         rating:
-          type: integer
-          description: "Rating given by the user."
-          minimum: 0
           maximum: 5
-          
+          minimum: 0
+          type: integer
+          description: Rating given by the user.
     Review:
-      type: object
       required:
-        - rest_id
-        - user_id
-        - text
+      - rest_id
+      - text
+      - user_id
+      type: object
       properties:
         rest_id:
           type: string
-          description: "ID of the reviewed restaurant."
+          description: ID of the reviewed restaurant.
         user_id:
           type: string
-          description: "ID of the user who left the review."
+          description: ID of the user who left the review.
         text:
           type: string
-          description: "Text of the review."
+          description: Text of the review.
+    Restaurant_dishes:
+      required:
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the dish.
+        url:
+          type: string
+          description: The URL associated with the dish.
