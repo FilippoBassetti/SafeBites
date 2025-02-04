@@ -69,7 +69,7 @@ router.get('', async (req, res) => {
 
         let restaurants;
         if (categories) {
-            restaurants = await Restaurant.find({ category: { $in: categories } });
+            restaurants = await Restaurant.find({ category: { $in: categories } }); // <- qui cerca per categorie Irene
         } else {
             // If no category/ies, return all restaurants
             restaurants = await Restaurant.find({});
