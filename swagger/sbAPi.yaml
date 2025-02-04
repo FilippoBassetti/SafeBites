@@ -540,7 +540,10 @@ components:
               url:
                 type: string
                 description: "The URL associated with the dish."
-            
+        profile_url:
+          type: string
+          description: "URL of the restaurant profile picture for frontend."
+                
     Rating:
       type: object
       required:
