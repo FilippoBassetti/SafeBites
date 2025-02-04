@@ -29,7 +29,13 @@ module.exports = mongoose.model('Restaurant', new Schema({
         },
         required: true,
     },
-    dishes: { type: [String], required: true }, // Array of dishes
+    dishes: {
+        type: [{
+            name: { type: String, required: true },
+            url: { type: String, required: true }
+        }],
+        required: true
+    }, // Array of dishes, composed of a name and a foto for each dish
     profile_url: { type: String, required: true }, // URL for the restaurant profile pictur
 }));
 
