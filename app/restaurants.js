@@ -23,7 +23,8 @@ router.get('/by-user/:user_id', async (req, res) => {
             opening_hours: restaurant.opening_hours,
             opening_days: restaurant.opening_days,
             dishes: restaurant.dishes,
-            profile_url: restaurant.profile_url
+            profile_url: restaurant.profile_url,
+            certificate: restaurant.certificate
         });
 
     } catch (error) {
@@ -65,39 +66,82 @@ router.get('/:id', async (req, res) => {
 
 router.get('', async (req, res) => {
     try {
-        const categories = req.query.categories; // querry parametr
+        const { categories, dishes, search, open_now, open_today, price, rating, certificate } = req.query;
+        let query = {};
 
-        let restaurants;
+        // Filter by category
         if (categories) {
-            restaurants = await Restaurant.find({ category: { $in: categories } }); // <- qui cerca per categorie Irene
-        } else {
-            // If no category/ies, return all restaurants
-            restaurants = await Restaurant.find({});
+            query.category = { $in: categories };
         }
 
-        restaurants = restaurants.map((restaurant) => {
-            return {
-                self: '/api/v1/restaurants/' + restaurant._id,
-                user_id: restaurant.user_id,
-                email: restaurant.email,
-                name: restaurant.name,
-                address: restaurant.address,
-                category: restaurant.category,
-                rating: restaurant.rating,
-                price: restaurant.price,
-                opening_hours: restaurant.opening_hours,
-                opening_days: restaurant.opening_days,
-                dishes: restaurant.dishes,
-                profile_url: restaurant.profile_url
-            };
-        });
+        // Filter by dishes
+        if (dishes) {
+            query['dishes.name'] = { $in: dishes };
+        }
+
+        // Text search across multiple fields
+        if (search) {
+            const searchRegex = new RegExp(search.join('|'), 'i'); // Case-insensitive search
+            query.$or = [
+                { name: searchRegex },
+                { address: searchRegex },
+                { category: searchRegex },
+                { 'dishes.name': searchRegex }
+            ];
+        }
+
+        // Filter by rating (greater than or equal)
+        if (rating) {
+            query.rating = { $gte: parseFloat(rating) };
+        }
+
+        // Filter by price (exact match)
+        if (price) {
+            query.price = parseInt(price);
+        }
+
+        // Filter by open hours
+        if (open_now) {
+            const currentTime = parseInt(open_now);
+            query.opening_hours = { $elemMatch: { $lte: currentTime, $gte: currentTime } };
+        }
+
+        // Filter by open days
+        if (open_today) {
+            query[`opening_days.${parseInt(open_today)}`] = true;
+        }
+
+        // Filter by certificate, if not provided or false, it want interract with this
+        if (certificate === 'true') {
+            query.certificate = true;
+        }
+
+        let restaurants = await Restaurant.find(query);
+
+        // Format response
+        restaurants = restaurants.map(restaurant => ({
+            self: `/api/v1/restaurants/${restaurant._id}`,
+            user_id: restaurant.user_id,
+            email: restaurant.email,
+            name: restaurant.name,
+            address: restaurant.address,
+            category: restaurant.category,
+            rating: restaurant.rating,
+            price: restaurant.price,
+            opening_hours: restaurant.opening_hours,
+            opening_days: restaurant.opening_days,
+            dishes: restaurant.dishes,
+            profile_url: restaurant.profile_url,
+            certificate: restaurant.certificate
+        }));
 
         res.status(200).json(restaurants);
     } catch (error) {
         console.error('Error fetching restaurants:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
@@ -127,7 +171,8 @@ router.post('', async (req, res) => {
             opening_hours: req.body.opening_hours,
             opening_days: req.body.opening_days,
             dishes: req.body.dishes || [], 
-            profile_url: req.body.profile_url
+            profile_url: req.body.profile_url,
+            certificate: req.body.certificate || false
         });
 
         restaurant = await restaurant.save();
@@ -145,7 +190,8 @@ router.post('', async (req, res) => {
             opening_hours: restaurant.opening_hours,
             opening_days: restaurant.opening_days,
             dishes: restaurant.dishes,
-            profile_url: restaurant.profile_url
+            profile_url: restaurant.profile_url,
+            certificate: restaurant.certificate
         };
 
         console.log('restaurant saved successfully');
@@ -181,7 +227,7 @@ router.put('/:id', async (req, res) => {
 
         // Check if all required fields are completed 
         const requiredFields = ['user_id', 'email', 'name', 'address', 'category',
-            'price', 'opening_hours', 'opening_days', 'profile_url'];
+            'price', 'opening_hours', 'opening_days', 'profile_url', 'certificate'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
                 return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -196,7 +242,7 @@ router.put('/:id', async (req, res) => {
 
         const updatableFields = [
             'email', 'name', 'address', 'category', 'price',
-            'opening_hours', 'opening_days', 'profile_url'
+            'opening_hours', 'opening_days', 'profile_url', 'certificate'
         ];
 
         updatableFields.forEach(field => {
@@ -234,7 +280,8 @@ router.put('/:id', async (req, res) => {
             opening_hours: updatedRestaurant.opening_hours,
             opening_days: updatedRestaurant.opening_days,
             dishes: updatedRestaurant.dishes,
-            profile_url: updatedRestaurant.profile_url
+            profile_url: updatedRestaurant.profile_url,
+            certificate: updatedRestaurant.certificate
         };
 
         res.status(200).json(responseData);

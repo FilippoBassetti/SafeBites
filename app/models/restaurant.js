@@ -37,6 +37,7 @@ module.exports = mongoose.model('Restaurant', new Schema({
         required: true
     }, // Array of dishes, composed of a name and a foto for each dish
     profile_url: { type: String, required: true }, // URL for the restaurant profile pictur
+    certificate: {type: Boolean, required: true, default: false} // AIC certificate
 }));
 
 //const Restaurant = require('./models/restaurant');
