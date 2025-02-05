@@ -21,7 +21,7 @@ function tokenChecker(req, res, next) {
         }
         
         // Attach the decoded user id to the request object
-        req.user = { id: decoded.id };
+        req.loggedUser = { id: decoded.id };
         next();
     });
 }

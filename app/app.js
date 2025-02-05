@@ -35,7 +35,9 @@ app.use('/api/v1/restaurants', (req, res, next) => {
 });
 
 app.use('/api/v1/users', (req, res, next) => {
-    if (['PUT', 'DELETE'].includes(req.method)) {
+    if (['PUT', 'DELETE', ].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else if (req.path === '/me') {
         tokenChecker(req, res, next);
     } else {
         next(); // Allow GET without authentication
