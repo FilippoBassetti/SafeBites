@@ -31,7 +31,7 @@ router.get('/:id', async (req, res) => {
 router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
-        const requiredFields = ['email', 'password', 'user_name', 'name', 'family_name', 'user_type'];
+        const requiredFields = ['email', 'password', 'user_name', 'name', 'family_name'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
                 return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -47,7 +47,7 @@ router.post('', async (req, res) => {
             user_name: req.body.user_name,
             name: req.body.name,
             family_name: req.body.family_name,
-            user_type: req.body.user_type
+            user_type: req.body.user_type || false
         });
 
         user = await user.save();
