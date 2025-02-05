@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const Path = require('path');
 
 const authentication = require('./authentication.js');
 const tokenChecker = require('./tokenChecker.js');

@@ -176,3 +176,5 @@ router.delete('/:rest_id', async (req, res) => {
         });
     }
 });
+
+module.exports = router;
