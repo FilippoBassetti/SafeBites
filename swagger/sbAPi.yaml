@@ -540,6 +540,7 @@ components:
       required:
       - email
       - family_name
+      - favourite_list
       - id
       - name
       - password
@@ -565,6 +566,12 @@ components:
         family_name:
           type: string
           description: Family name of the user.
+        favourite_list:
+          type: array
+          description: list of the favourite restaurants of the user
+          items:
+            type: string
+            description: id of the restaurant in favourite list
         user_type:
           type: boolean
           description: Whether the user is a restaurant (true) or a normal user (false).
