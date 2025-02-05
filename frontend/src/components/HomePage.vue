@@ -50,7 +50,7 @@
                                 class="w-full flex-shrink-0 h-96 flex items-center justify-center bg-pink-50 cursor-pointer hover:shadow-lg transition-shadow"
                                 @click="navigateTo(slide.route)">
                                 <div class="text-center p-8 -mt-2">
-                                    <p class="text-red-600 text-5xl font-agathobold">{{ slide.content }}</p>
+                                    <p class="text-red-600 text-5xl font-agatholight">{{ slide.content }}</p>
                                 </div>
                             </div>
                         </div>

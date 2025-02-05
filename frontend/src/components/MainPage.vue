@@ -39,7 +39,7 @@
         <CardMainPage />
       </div>
       <div class="bg-zinc-300 mt-12 rounded-xl w-2/5 mr-7"> 
-        <img src="../../public/img/image 10.png" class="w-full h-full object-cover rounded-xl">
+        <GoogleMap />
       </div>
     </div>
   </div>
@@ -49,6 +49,7 @@
 <script setup>
 import CardMainPage from './CardMainPage.vue';
 import { useRouter } from 'vue-router';
+import GoogleMap from './GoogleMap.vue';
 
 const router = useRouter();
 
