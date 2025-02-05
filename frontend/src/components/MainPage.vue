@@ -26,49 +26,49 @@
     </header>
 
     <!-- Filtra per -->
-    <div class="filter-section mt-8">
-      <h2 class="text-lg font-bold mb-4">Filtra per:</h2>
-      <div class="flex space-x-8">
-        <div @click="applyFilter('vicinanza')" class="filter-icon cursor-pointer">
-          <img src="../assets/location-icon.svg" alt="Vicinanza" class="h-8 w-8">
-          <p class="text-sm">Vicinanza</p>
-        </div>
-        <div @click="applyFilter('orario')" class="filter-icon cursor-pointer">
-          <img src="../assets/clock-icon.svg" alt="Orario" class="h-8 w-8">
-          <p class="text-sm">Orario</p>
-        </div>
-        <div @click="applyFilter('categoria')" class="filter-icon cursor-pointer">
-          <img src="../assets/category-icon.svg" alt="Categoria" class="h-8 w-8">
-          <p class="text-sm">Categoria</p>
-        </div>
-        <div @click="applyFilter('pietanze')" class="filter-icon cursor-pointer">
-          <img src="../assets/dish-icon.svg" alt="Pietanze" class="h-8 w-8">
-          <p class="text-sm">Pietanze</p>
-        </div>
-        <div @click="applyFilter('costo')" class="filter-icon cursor-pointer">
-          <img src="../assets/price-icon.svg" alt="Costo" class="h-8 w-8">
-          <p class="text-sm">Costo</p>
-        </div>
-        <div @click="applyFilter('valutazioni')" class="filter-icon cursor-pointer">
-          <img src="../assets/rating-icon.svg" alt="Valutazioni" class="h-8 w-8">
-          <p class="text-sm">Valutazioni</p>
-        </div>
-        <div @click="applyFilter('preferiti')" class="filter-icon cursor-pointer">
-          <img src="../assets/heart-icon.svg" alt="Preferiti" class="h-8 w-8">
-          <p class="text-sm">Preferiti</p>
-        </div>
+    <div class="mt-8 mx-auto items-center w-3/5">
+    <h2 class="text-lg font-bold mb-4">Filtra per:</h2>
+    <div class="flex justify-evenly">
+      <div @click="applyFilter('vicinanza')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.vicinanza ? '/img/icon/green/position.svg' : '/img/icon/red/position.svg'" alt="Vicinanza" class="h-12 w-12">
+        <p class="text-sm">Vicinanza</p>
+      </div>
+      <div @click="applyFilter('orario')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.orario ? '/img/icon/green/time.svg' : '/img/icon/red/time.svg'" alt="Orario" class="h-12 w-12">
+        <p class="text-sm">Orario</p>
+      </div>
+      <div @click="applyFilter('categoria')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.categoria ? '/img/icon/green/type.svg' : '/img/icon/red/type.svg'" alt="Categoria" class="h-12 w-12">
+        <p class="text-sm">Categoria</p>
+      </div>
+      <div @click="applyFilter('pietanze')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.pietanze ? '/img/icon/green/dishes.svg' : '/img/icon/red/dishes.svg'" alt="Pietanze" class="h-12 w-12">
+        <p class="text-sm">Pietanze</p>
+      </div>
+      <div @click="applyFilter('costo')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.costo ? '/img/icon/green/price.svg' : '/img/icon/red/price.svg'" alt="Costo" class="h-12 w-12">
+        <p class="text-sm">Costo</p>
+      </div>
+      <div @click="applyFilter('valutazioni')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.valutazioni ? '/img/icon/green/rank.svg' : '/img/icon/red/rank.svg'" alt="Valutazioni" class="h-12 w-12">
+        <p class="text-sm">Valutazioni</p>
+      </div>
+      <div @click="applyFilter('preferiti')" class="flex flex-col items-center cursor-pointer">
+        <img :src="filters.preferiti ? '/img/icon/green/saved.svg' : '/img/icon/red/saved.svg'" alt="Preferiti" class="h-12 w-12">
+        <p class="text-sm">Preferiti</p>
       </div>
     </div>
+  </div>
 
     <!-- Restaurants List -->
-    <div class="flex flex-row">
-      <div class="flex flex-wrap justify-evenly mt-8 w-3/5">
-        <CardMainPage v-for="(restaurant, index) in restaurants" :key="index" />
-      </div>
-      <div class="bg-zinc-300 mt-12 rounded-xl w-2/5 mr-7">
-        <GoogleMap />
-      </div>
-    </div>
+    <div class="flex flex-row h-full">
+  <div class="flex flex-wrap justify-evenly mt-8 w-3/5">
+    <CardMainPage v-for="(restaurant, index) in restaurants" :key="index" />
+  </div>
+  <div class="bg-zinc-300 mt-12 rounded-xl w-2/5 mr-7 min-h-[800px]">  <!-- Aumentato l'altezza minima -->
+    <GoogleMap />
+  </div>
+</div>
   </div>
 </template>
 
@@ -118,7 +118,6 @@ const applyFilter = async (filterType) => {
   }
 };
 
-// Carica inizialmente tutti i ristoranti
 const loadRestaurants = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/v1/restaurants');
@@ -130,36 +129,3 @@ const loadRestaurants = async () => {
 
 loadRestaurants();  // Carica i ristoranti quando il componente viene montato
 </script>
-
-<style scoped>
-.filter-section {
-  background-color: #f4f4f4;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.filter-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.filter-icon img {
-  cursor: pointer;
-}
-
-.filter-icon p {
-  margin-top: 5px;
-  font-size: 12px;
-}
-
-.filter-section h2 {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.flex {
-  display: flex;
-  justify-content: space-between;
-}
-</style>
