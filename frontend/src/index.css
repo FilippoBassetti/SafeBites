@@ -15,4 +15,9 @@
     font-weight: bold;
     font-style: normal;
   }
-  
+  @font-face {
+    font-family: 'AgathoLightmin';
+    src: url('../public/font/Agatho-Light/Agatho_Light.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
