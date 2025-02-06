@@ -219,6 +219,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
+    console.log('Received PUT request with body:', req.body);
     try {
         let restaurant = await Restaurant.findById(req.params.id).exec();
         if (!restaurant) {
