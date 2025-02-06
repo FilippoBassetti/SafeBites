@@ -7,5 +7,6 @@ module.exports = mongoose.model('User', new Schema({
     user_name: { type: String, required: true , unique: true},
     name: { type: String, required: true },
     family_name: { type: String, required: true },
+    favourite_list: {type: [String], required: true },
     user_type: { type: Boolean, required: true },
 }));

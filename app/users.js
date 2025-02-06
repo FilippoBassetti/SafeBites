@@ -11,19 +11,23 @@ router.get('/me', async (req, res) => {
             return;
         }
 
-        let user = await User.findById(req.loggedUser.id).exec();
+        let user = await User.findById(req.loggedUser.id);
         if (!user) {
             console.log('User not found');
             return res.status(404).send();
         }
+
         res.status(200).json({
             self: '/api/v1/users/' + user._id,
             email: user.email,
             user_name: user.user_name,
             name: user.name,
             family_name: user.family_name,
+            favourite_list: user.favourite_list,
             user_type: user.user_type
+            
         });
+
     } catch (error) {
         console.error('Error fetching user:', error);
         res.status(500).send('Internal Server Error');
@@ -33,7 +37,7 @@ router.get('/me', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        let user = await User.findById(req.params.id).exec();
+        let user = await User.findById(req.params.id);
         if (!user) {
             console.log('User not found');
             return res.status(404).send();
@@ -44,6 +48,7 @@ router.get('/:id', async (req, res) => {
             user_name: user.user_name,
             name: user.name,
             family_name: user.family_name,
+            favourite_list: user.favourite_list,
             user_type: user.user_type
         });
     } catch (error) {
@@ -73,6 +78,7 @@ router.post('', async (req, res) => {
             user_name: req.body.user_name,
             name: req.body.name,
             family_name: req.body.family_name,
+            favourite_list: req.body.favourite_list || {},
             user_type: req.body.user_type || false
         });
 
@@ -85,6 +91,7 @@ router.post('', async (req, res) => {
             user_name: user.user_name,
             name: user.name,
             family_name: user.family_name,
+            favourite_list: user.favourite_list,
             user_type: user.user_type
         };
 

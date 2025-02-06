@@ -19,9 +19,8 @@ function tokenChecker(req, res, next) {
                 message: 'Failed to authenticate token.'
             });
         }
-        
         // Attach the decoded user id to the request object
-        req.loggedUser = { id: decoded.id };
+        req.loggedUser = decoded;
         next();
     });
 }

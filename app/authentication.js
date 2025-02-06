@@ -67,7 +67,17 @@ router.post('', async function (req, res) {
             return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
         }
     }
-    var token = jwt.sign({ id: user._id }, process.env.SUPER_SECRET, { expiresIn: 86400 });
+
+    var payload = {
+        id: user._id,
+		email: user.email
+		// other data encrypted in the token	
+	}
+	var options = {
+		expiresIn: 86400 // expires in 24 hours
+	}
+
+    var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
     res.json({
         success: true,
