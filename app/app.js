@@ -3,13 +3,13 @@ const app = express();
 const cors = require('cors');
 const Path = require('path');
 
-const authentication = require('./authentication.js');
-const tokenChecker = require('./tokenChecker.js');
+const authentication = require('./middlewares/authentication.js');
+const tokenChecker = require('./middlewares/tokenChecker.js');
 
-const restaurants = require('./restaurants.js');
-const users = require('./users.js')
-const reviews = require('./reviews.js')
-const ratings = require('./ratings.js')
+const restaurants = require('./controllers/restaurants.js');
+const users = require('./controllers//users.js')
+const reviews = require('./controllers//reviews.js')
+const ratings = require('./controllers//ratings.js')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

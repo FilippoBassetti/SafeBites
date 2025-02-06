@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Restaurant = require('./models/restaurant'); // get our mongoose model
+const Restaurant = require('../models/restaurant'); // get our mongoose model
 
 
 router.get('/by-user/:user_id', async (req, res) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Rating = require('./models/rating');
+const Rating = require('../models/rating');
 
 // Get ratings for a restaurant, optionally filtered by user
 router.get('/:rest_id', async (req, res) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Review = require('./models/review');
+const Review = require('../models/review');
 
 // Get reviews for a restaurant, optionally filtered by user
 router.get('/:rest_id', async (req, res) => {
