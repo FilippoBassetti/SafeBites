@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "node api.js",
+        "start": "node index.js",
+        "start_local": "echo use: $ npm run dev",
         "dev": "node -r dotenv/config index.js",
         "test": "jest"
     },
