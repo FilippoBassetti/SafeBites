@@ -8,10 +8,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        oooh: ['Oooh Baby'],
-        agatholight: ['AgathoLight', 'sans-serif'],
-        agathobold: ['AgathoBold', 'sans-serif'],
-        agatholightmin: ['AgathoLightmin', 'sans-serif'],
+        oooh: ['Oooh Baby']
       },
       colors: {
         'green-light': '#287233',
