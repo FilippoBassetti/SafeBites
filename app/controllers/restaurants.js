@@ -13,6 +13,7 @@ router.get('/by-user/:user_id', async (req, res) => {
 
         res.status(200).json({
             self: '/api/v1/restaurants/' + restaurant._id,
+            id: restaurant._id,
             user_id: restaurant.user_id,
             email: restaurant.email,
             name: restaurant.name,
@@ -45,6 +46,7 @@ router.get('/:id', async (req, res) => {
 
         res.status(200).json({
             self: '/api/v1/restaurants/' + restaurant._id,
+            id: restaurant._id,
             user_id: restaurant.user_id,
             email: restaurant.email,
             name: restaurant.name,
@@ -121,6 +123,7 @@ router.get('', async (req, res) => {
         // Format response
         restaurants = restaurants.map(restaurant => ({
             self: `/api/v1/restaurants/${restaurant._id}`,
+            id: restaurant._id,
             user_id: restaurant.user_id,
             email: restaurant.email,
             name: restaurant.name,
@@ -178,8 +181,8 @@ router.post('', async (req, res) => {
         restaurant = await restaurant.save();
 
         const responseData = {
-            id: restaurant._id.toString(),
             self: '/api/v1/restaurants/${restaurant._id}',
+            id: restaurant._id,
             user_id: restaurant.user_id,
             email: restaurant.email,
             name: restaurant.name,
@@ -271,6 +274,7 @@ router.put('/:id', async (req, res) => {
 
         const responseData = {
             self: '/api/v1/restaurants/${updatedRestaurant._id}',
+            id: updatedRestaurant._id,
             user_id: updatedRestaurant.user_id,
             email: updatedRestaurant.email,
             name: updatedRestaurant.name,
