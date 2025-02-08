@@ -1,7 +1,7 @@
 const app = require('./app/app.js');
 const mongoose = require('mongoose');
 //const bodyParser = require('body-parser');
-require('dotenv').config();
+require('dotenv').config({ path: './.env.example' });
 const port = process.env.PORT || 8081;
 
 

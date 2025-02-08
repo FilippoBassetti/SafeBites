@@ -10,7 +10,7 @@
       <h2 class="text-lg font-bold">{{ restaurant.name }}</h2>
       <p class="text-sm text-gray-600">{{ restaurant.address }}</p>
       <p class="text-sm text-gray-600">Category: {{ restaurant.category }}</p>
-      <p class="text-sm text-gray-600">Price: {{ formatPrice(restaurant.price) }}</p>
+      <p class="text-sm text-gray-600">Price: {{ restaurant.price }}</p>
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@ export default {
   props: ['restaurant'], // Riceve i dati come prop
   setup(props) {
     const router = useRouter();
-
+    console.log(props.restaurant.id);
     const goToDetails = () => {
       router.push({
         path: `/restaurant/${props.restaurant.id}`,

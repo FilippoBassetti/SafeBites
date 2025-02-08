@@ -142,7 +142,7 @@ export default {
         };
 
         if (this.isLogin) {
-          const response = await axios.post('http://localhost:8000/api/v1/authentication', authData);
+          const response = await axios.post('http://localhost:8081/api/v1/authentication', authData);
           console.log('Login successful:', response.data);
 
           localStorage.setItem('token', response.data.token);

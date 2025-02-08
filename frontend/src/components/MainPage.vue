@@ -3,7 +3,7 @@
     <!-- HEADER -->
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between relative">
-        <img src="../assets/safebites_logo.png" alt="Logo" class="h-24 w-50" />
+        <img src="../assets/safebites_logo.png" alt="Logo" class="h-24 w-50" @click="navigateTo('/Home')"/>
 
         <!-- SEARCH BAR -->
         <div class="relative text-gray-600">
@@ -134,7 +134,7 @@
       <div class="flex flex-wrap justify-evenly w-3/5">
         <CardMainPage v-for="(restaurant, index) in restaurants" :key="index" :restaurant="restaurant" />
       </div>
-      <div class="bg-zinc-300 rounded-xl w-2/5 mr-7 min-h-[800px] mt-12">
+      <div class="bg-zinc-300 rounded-xl w-2/5 mr-7 min-h-[800px] mt-4">
         <GoogleMap :restaurants="restaurants" />
       </div>
     </div>
@@ -226,7 +226,7 @@ function toggleVicinanza() {
 
 async function loadRestaurants() {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/restaurants', {
+    const response = await axios.get('http://localhost:8081/api/v1/restaurants', {
       params: {
         search: searchQuery.value ? [searchQuery.value] : [],
         vicinanza: filters.value.vicinanza,
@@ -239,6 +239,11 @@ async function loadRestaurants() {
       }
     });
     restaurants.value = response.data;
+
+    console.log("Risposta API:", response);
+    
+    // Se vuoi stampare solo i dati:
+    console.log("Dati API:", response.data);
   } catch (error) {
     console.error("Errore nel caricamento dei ristoranti:", error);
   }
