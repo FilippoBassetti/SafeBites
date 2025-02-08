@@ -5,7 +5,8 @@ import MainPage from '../components/MainPage.vue';
 import FoodTraditionPage from '../components/FoodTraditionPage.vue';
 import EnogastronomicPaths from '../components/EnogastronomicsPaths.vue';
 import UserPage from '@/components/UserPage.vue';
-import RestourantDetailPage from '@/components/RestourantDetailPage.vue';
+//import RestourantDetailPage from '@/components/RestourantDetailPage.vue';
+import HomePage from '@/components/HomePage.vue';
 
 const routes = [
   {
@@ -16,7 +17,7 @@ const routes = [
   {
     path: '/',
     name: 'HomePage',
-    component: RestourantDetailPage,
+    component: HomePage,
   },
   {
     path: '/MainPage',

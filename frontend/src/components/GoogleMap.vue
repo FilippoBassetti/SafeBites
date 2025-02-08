@@ -3,6 +3,11 @@
     <l-map :zoom="zoom" :center="center">
       <l-tile-layer :url="tileUrl" :attribution="attribution" :maxZoom="19" />
       <l-marker :lat-lng="center"></l-marker>
+      <l-marker
+        v-for="(coord, index) in restaurantCoords"
+        :key="index"
+        :lat-lng="coord"
+      />
     </l-map>
   </div>
   <div v-else class="loading">
@@ -11,36 +16,76 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { LMap, LTileLayer, LMarker } from 'vue3-leaflet'
-import 'leaflet/dist/leaflet.css'
+import { ref, onMounted, watch } from 'vue';
+import { LMap, LTileLayer, LMarker } from 'vue3-leaflet';
+import 'leaflet/dist/leaflet.css';
+/* eslint-disable no-undef */
+const props = defineProps({
+  restaurants: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+});
 
-const zoom = ref(16)
-const center = ref(null)
-const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-const address = 'Via Venezia, 123, 38122 Trento TN'
+const zoom = ref(16);
+const center = ref(null);
+const restaurantCoords = ref([]);
+const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const attribution =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+// Get user's current location
+onMounted(() => {
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        center.value = [position.coords.latitude, position.coords.longitude];
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        geocodeAddress('Trento, Italy').then((coord) => {
+          if (coord) center.value = coord;
+        });
+      }
+    );
+  } else {
+    geocodeAddress('Trento, Italy').then((coord) => {
+      if (coord) center.value = coord;
+    });
+  }
+});
+
+// Geocode restaurant addresses when restaurants change
+watch(
+  () => props.restaurants,
+  async (newRestaurants) => {
+    const coords = [];
+    for (const restaurant of newRestaurants) {
+      const coord = await geocodeAddress(restaurant.address);
+      if (coord) coords.push(coord);
+    }
+    restaurantCoords.value = coords;
+  }
+);
 
 async function geocodeAddress(addr) {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+    addr
+  )}&format=json&limit=1`;
   try {
-    const response = await fetch(url)
-    const data = await response.json()
-    if (data && data.length > 0) {
-      const lat = parseFloat(data[0].lat)
-      const lon = parseFloat(data[0].lon)
-      center.value = [lat, lon]
-    } else {
-      console.error("Nessun risultato trovato per l'indirizzo")
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data?.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
     }
+    console.error('No results for:', addr);
+    return null;
   } catch (error) {
-    console.error('Errore durante il geocoding:', error)
+    console.error('Geocoding error:', error);
+    return null;
   }
 }
-
-onMounted(() => {
-  geocodeAddress(address)
-})
 </script>
 
 <style scoped>
@@ -63,4 +108,3 @@ onMounted(() => {
   font-size: 1.2em;
 }
 </style>
-  
