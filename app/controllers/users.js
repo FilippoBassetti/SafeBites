@@ -123,7 +123,7 @@ router.put('/:{id}', async (req, res) => {
         }
 
         //check body and sanitize input
-        const requiredFields = ['email', 'password', 'user_name', 'name', 'family_name'];
+        const requiredFields = ['email', 'user_name', 'name', 'family_name'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
                 return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -140,15 +140,19 @@ router.put('/:{id}', async (req, res) => {
             return res.status(400).json({ error: 'Invalid email format' });
         }
 
-
-
         const updatableFields = [
-            'email', 'password', 'user_name', 'name', 'family_name', 'favourite_list', 'user_type'
+            'email', 'user_name', 'name', 'family_name', 'favourite_list', 'user_type'
         ];
 
         updatableFields.forEach(field => {
             user[field] = req.body[field];
         });
+
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        if(req.body.password){
+            user.password = hashedPassword;
+        }
 
         const updatedUser = await user.save();
 
