@@ -1,10 +1,9 @@
 <template>
   <div class="h-[18rem] w-[14rem] ml-2 bg-pink-50 rounded-xl flex flex-col p-4 mt-4 mb-6">
+    <img :src="dishUrl" alt="Dish Image" class="object-cover w-full h-40 rounded-md" />
     <div class="flex-grow flex items-center justify-center">
-      <!-- Visualizza il nome del piatto ricostruito -->
       <p class="text-green-700 font-semibold text-xl">{{ dishName }}</p>
     </div>
-    <!-- Se in futuro vuoi aggiungere un'immagine o altro, puoi farlo qui -->
   </div>
 </template>
 
@@ -26,6 +25,9 @@ export default {
         .sort((a, b) => a - b)
         .map(key => this.dish[key])
         .join('');
+    },
+    dishUrl() {
+      return this.dish.url;
     }
   }
 }

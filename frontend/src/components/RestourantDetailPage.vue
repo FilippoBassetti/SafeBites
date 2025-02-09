@@ -3,7 +3,12 @@
     <!-- HEADER (rimane invariato) -->
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between relative">
-        <img src="../assets/safebites_logo.png" alt="Logo" class="h-24 w-50" @click="navigateTo('/Home')" />
+        <img
+          src="../assets/safebites_logo.png"
+          alt="Logo"
+          class="h-24 w-50"
+          @click="navigateTo('/Home')"
+        />
 
         <!-- SEARCH BAR -->
         <div class="relative text-gray-600">
@@ -22,7 +27,12 @@
 
         <!-- USER ICON -->
         <div class="flex items-center space-x-2">
-          <img src="../assets/user_icon.png" alt="User" class="h-14 w-14 mt-4" @click="navigateTo('/userPage')" />
+          <img
+            src="../assets/user_icon.png"
+            alt="User"
+            class="h-14 w-14 mt-4"
+            @click="navigateTo('/userPage')"
+          />
         </div>
       </div>
     </header>
@@ -60,6 +70,34 @@
         />
       </div>
     </section>
+
+    <!-- Sezione RECENSIONI -->
+    <section class="max-w-7xl mx-auto mt-10">
+      <h2 class="text-2xl font-bold text-red-700 mb-4">REVIEWS:</h2>
+      
+      <!-- Lista delle recensioni -->
+      <div v-if="reviews.length > 0" class="space-y-4">
+        <div v-for="(review, index) in reviews" :key="index" class="bg-white p-4 rounded-lg shadow-md">
+          <p class="text-gray-700">{{ review.text }}</p>
+          <p class="text-gray-500 text-sm">By user: {{ review.user_id }}</p>
+        </div>
+      </div>
+      <div v-else>
+        <p class="text-gray-600">No reviews yet.</p>
+      </div>
+      
+      <!-- Form per lasciare una recensione (visibile solo se l'utente è loggato) -->
+      <div class="mt-6">
+        <h3 class="text-xl font-semibold">Leave a Review</h3>
+        <div v-if="isLoggedIn">
+          <textarea v-model="newReviewText" rows="3" placeholder="Write your review here..." class="w-full p-2 border rounded-lg"></textarea>
+          <button @click="submitReview" class="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Submit Review</button>
+        </div>
+        <div v-else>
+          <p class="text-red-500">You must be logged in to leave a review.</p>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -87,8 +125,15 @@ export default {
         dishes: []  // Assicurati che questo campo sia un array di oggetti
       },
       isOpen: false,
-      isFavorite: false
+      isFavorite: false,
+      reviews: [],
+      newReviewText: ''
     };
+  },
+  computed: {
+    isLoggedIn() {
+      return !!localStorage.getItem('token');
+    }
   },
   created() {
     this.fetchRestaurantData();
@@ -99,6 +144,8 @@ export default {
         const response = await axios.get(`http://localhost:8081/api/v1/restaurants/${this.$route.params.id}`);
         this.restaurant = response.data;
         this.checkOpenStatus();
+        // Carica le recensioni dopo aver ottenuto i dati del ristorante
+        this.fetchReviews();
       } catch (error) {
         console.error('Error fetching restaurant data:', error);
       }
@@ -112,14 +159,52 @@ export default {
     },
     toggleFavorite() {
       this.isFavorite = !this.isFavorite;
-      // Puoi aggiungere qui una chiamata API per aggiornare i preferiti dell'utente
+      // Aggiungi qui eventuale chiamata API per aggiornare i preferiti dell'utente
     },
     navigateTo(route) {
       this.$router.push(route);
     },
     loadRestaurants() {
-      // Implementa la logica per il caricamento dei ristoranti, se non lo hai già fatto
+      // Implementa la logica per il caricamento dei ristoranti, se necessario
+    },
+    async fetchReviews() {
+      try {
+        const res = await axios.get(`http://localhost:8081/api/v1/reviews/${this.restaurant.id}`);
+        // Il backend restituisce un oggetto { reviews: [...] }
+        this.reviews = res.data.reviews;
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        this.reviews = [];
+      }
+    },
+    async submitReview() {
+      if (!this.isLoggedIn) {
+        alert('You must be logged in to leave a review.');
+        return;
+      }
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user) {
+        alert('User information not found.');
+        return;
+      }
+      try {
+        await axios.post('http://localhost:8081/api/v1/reviews', {
+          rest_id: this.restaurant.id,
+          user_id: user.id,
+          text: this.newReviewText
+        });
+        alert('Review submitted successfully!');
+        this.newReviewText = '';
+        this.fetchReviews();
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('Error submitting review.');
+      }
     }
   }
 };
 </script>
+
+<style scoped>
+  /* Aggiungi eventuali stili personalizzati qui */
+</style>

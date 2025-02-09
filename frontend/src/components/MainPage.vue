@@ -22,7 +22,7 @@
 
         <!-- USER ICON -->
         <div class="flex items-center space-x-2">
-          <img src="../assets/user_icon.png" alt="User" class="h-14 w-14 mt-4" @click="navigateTo('/userPage')" />
+          <img src="../assets/user_icon.png" alt="User" class="h-14 w-14 mt-4" @click="conditionalNavigateTo()" />
         </div>
       </div>
     </header>
@@ -256,6 +256,20 @@ watch([searchQuery, tolleranzaContaminazioni, filters], () => {
 function navigateTo(route) {
   router.push(route);
 }
+const conditionalNavigateTo = () => {
+    if(localStorage.getItem('token')){
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(user.user_type == 'true'){
+            navigateTo('/RestaurantPrivate');
+        }
+        else{
+            navigateTo('/UserPage');
+        }
+    }
+    else{
+        navigateTo('/Access');
+    }
+};
 
 loadRestaurants();
 </script>
