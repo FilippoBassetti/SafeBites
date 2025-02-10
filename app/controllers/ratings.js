@@ -3,17 +3,17 @@ const router = express.Router();
 const Rating = require('../models/rating');
 
 // Get ratings for a restaurant, optionally filtered by user
-router.get('/:rest_id', async (req, res) => {
+router.get('/:restaurant_id', async (req, res) => {
     try {
         let ratings;
         // Check for user_id query parameter
         if (req.query.user_id) {
             ratings = await Rating.find({ 
-                rest_id: req.params.rest_id, 
+                resaurant_id: req.params.restaurant_id, 
                 user_id: req.query.user_id 
             }).exec();
         } else {
-            ratings = await Rating.find({ rest_id: req.params.rest_id });
+            ratings = await Rating.find({ restaurant_id: req.params.restaurant_id });
         }
 
         // Handle no results case
@@ -23,7 +23,7 @@ router.get('/:rest_id', async (req, res) => {
 
         // Format response to exclude database internals
         ratings = ratings.map(rating => ({
-            rest_id: rating.rest_id,
+            restaurant_id: rating.restaurant_id,
             user_id: rating.user_id,
             rating: rating.rating
         }));
@@ -41,7 +41,7 @@ router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
         // Validate required fields
-        const requiredFields = ['rest_id', 'user_id', 'rating'];
+        const requiredFields = ['restaurant_id', 'user_id', 'rating'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
                 return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -55,8 +55,8 @@ router.post('', async (req, res) => {
 
         // Create and save new rating
         let rating = new Rating({
-            rest_id: req.body.rest_id,
-            user_id: req.body.user_id,
+            restaurant_id: req.body.restaurant_id, 
+            user_id: req.body.user_id ,
             rating: req.body.rating
         });
         
@@ -65,7 +65,7 @@ router.post('', async (req, res) => {
         // Build response with location header
         const responseData = {
             self: '/api/v1/rating/' + rating._id,
-            rest_id: rating.rest_id,
+            restaurant_id: rating.restaurant_id,
             user_id: rating.user_id,
             rating: rating.rating
         };
@@ -81,7 +81,7 @@ router.post('', async (req, res) => {
 });
 
 // Update existing rating
-router.put('/:rest_id', async (req, res) => {
+router.put('/:restaurant_id', async (req, res) => {
     try {
         // Validate required query parameter
         if (!req.query.user_id) {
@@ -90,7 +90,7 @@ router.put('/:rest_id', async (req, res) => {
 
         // Find existing rating
         let rating = await Rating.findOne({ 
-            rest_id: req.params.rest_id, 
+            restaurant_id: req.params.restaurant_id, 
             user_id: req.query.user_id 
         }).exec();
         
@@ -112,7 +112,7 @@ router.put('/:rest_id', async (req, res) => {
         }
 
         // Verify ID consistency
-        if (req.body.rest_id !== req.params.rest_id) {
+        if (req.body.restaurant_id !== req.params.restaurant_id) {
             return res.status(400).json({ error: 'rest_id mismatch' });
         }
         if (req.body.user_id !== req.query.user_id) {
@@ -126,7 +126,7 @@ router.put('/:rest_id', async (req, res) => {
         // Build response
         const responseData = {
             self: '/api/v1/rating/' + rating._id,
-            rest_id: rating.rest_id,
+            restaurant_id: rating.restaurant_id,
             user_id: rating.user_id,
             rating: rating.rating
         };
@@ -151,7 +151,7 @@ router.put('/:rest_id', async (req, res) => {
 });
 
 // Delete rating
-router.delete('/:rest_id', async (req, res) => {
+router.delete('/:restaurant_id', async (req, res) => {
     try {
         // Validate required query parameter
         if (!req.query.user_id) {
@@ -160,7 +160,7 @@ router.delete('/:rest_id', async (req, res) => {
         
         // Find and verify rating exists
         let rating = await Rating.findOne({ 
-            rest_id: req.params.rest_id, 
+            restaurant_id: req.params.restaurant_id, 
             user_id: req.query.user_id 
         }).exec();
         

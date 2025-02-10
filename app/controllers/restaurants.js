@@ -206,18 +206,6 @@ router.post('', async (req, res) => {
 });
 
 
-router.delete('/:id', async (req, res) => {
-    let restaurant = await Restaurant.findById(req.params.id).exec();;
-    if (!restaurant) {
-        res.status(404).send()
-        console.log('restaurant not found')
-        return;
-    }
-    await restaurant.deleteOne();
-    console.log('restaurant removed')
-    res.status(204).send()
-});
-
 router.put('/:id', async (req, res) => {
     console.log('Received PUT request with body:', req.body);
     try {
@@ -301,5 +289,16 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    let restaurant = await Restaurant.findById(req.params.id).exec();;
+    if (!restaurant) {
+        res.status(404).send()
+        console.log('restaurant not found')
+        return;
+    }
+    await restaurant.deleteOne({_id : req.params.id})
+    console.log('restaurant removed')
+    res.status(204).send()
+});
 
 module.exports = router;

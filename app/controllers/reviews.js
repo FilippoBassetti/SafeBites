@@ -3,17 +3,17 @@ const router = express.Router();
 const Review = require('../models/review');
 
 // Get reviews for a restaurant, optionally filtered by user
-router.get('/:rest_id', async (req, res) => {
+router.get('/:restaurant_id', async (req, res) => {
     try {
         let reviews;
         // Check for user_id query parameter
         if (req.query.user_id) {
             reviews = await Review.find({ 
-                rest_id: req.params.rest_id, 
+                restaurant_id: req.params.restaurant_id, 
                 user_id: req.query.user_id 
             }).exec();
         } else {
-            reviews = await Review.find({ rest_id: req.params.rest_id });
+            reviews = await Review.find({ restaurant_id: req.params.restaurant_id });
         }
 
         // Handle no results case
@@ -23,7 +23,7 @@ router.get('/:rest_id', async (req, res) => {
 
         // Format response to exclude database internals
         reviews = reviews.map(review => ({
-            rest_id: review.rest_id,
+            restaurant_id: review.restaurant_id,
             user_id: review.user_id,
             text: review.text
         }));
@@ -41,7 +41,7 @@ router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
         // Validate required fields
-        const requiredFields = ['rest_id', 'user_id', 'text'];
+        const requiredFields = ['restaurant_id', 'user_id', 'text'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
                 return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -50,7 +50,7 @@ router.post('', async (req, res) => {
 
         // Create and save new review
         let review = new Review({
-            rest_id: req.body.rest_id,
+            restaurant_id: req.body.restaurant_id,
             user_id: req.body.user_id,
             text: req.body.text
         });
@@ -60,7 +60,7 @@ router.post('', async (req, res) => {
         // Build response with location header
         const responseData = {
             self: '/api/v1/review/' + review._id,
-            rest_id: review.rest_id,
+            restaurant_id: review.restaurant_id,
             user_id: review.user_id,
             text: review.text
         };
@@ -76,7 +76,7 @@ router.post('', async (req, res) => {
 });
 
 // Update existing review
-router.put('/:rest_id', async (req, res) => {
+router.put('/:restaurant_id', async (req, res) => {
     try {
         // Validate required query parameter
         if (!req.query.user_id) {
@@ -85,7 +85,7 @@ router.put('/:rest_id', async (req, res) => {
 
         // Find existing review
         let review = await Review.findOne({ 
-            rest_id: req.params.rest_id, 
+            restaurant_id: req.params.restaurant_id, 
             user_id: req.query.user_id 
         }).exec();
         
@@ -102,8 +102,8 @@ router.put('/:rest_id', async (req, res) => {
         }
 
         // Verify ID consistency
-        if (req.body.rest_id !== req.params.rest_id) {
-            return res.status(400).json({ error: "rest_id mismatch" });
+        if (req.body.restaurant_id !== req.params.restaurant_id) {
+            return res.status(400).json({ error: "restaurant_id mismatch" });
         }
         if (req.body.user_id !== req.query.user_id) {
             return res.status(400).json({ error: "user_id mismatch" });
@@ -116,7 +116,7 @@ router.put('/:rest_id', async (req, res) => {
         // Build response
         const responseData = {
             self: '/api/v1/review/' + review._id,
-            rest_id: review.rest_id,
+            restaurant_id: review.restaurant_id,
             user_id: review.user_id,
             text: review.text
         };
@@ -141,7 +141,7 @@ router.put('/:rest_id', async (req, res) => {
 });
 
 // Delete review
-router.delete('/:rest_id', async (req, res) => {
+router.delete('/:restaurant_id', async (req, res) => {
     try {
         // Validate required query parameter
         if (!req.query.user_id) {
@@ -150,7 +150,7 @@ router.delete('/:rest_id', async (req, res) => {
         
         // Find and verify review exists
         let review = await Review.findOne({ 
-            rest_id: req.params.rest_id, 
+            restaurant_id: req.params.restaurant_id, 
             user_id: req.query.user_id 
         }).exec();
         

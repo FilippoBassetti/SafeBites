@@ -4,6 +4,9 @@ const app = require('../app/app');
 const User = require('../app/models/user');
 const bcrypt = require('bcrypt');
 
+jest.mock('bcrypt');
+jest.mock('../app/models/user');
+
 describe('GET /api/v1/users/me', () => {
 
   // Moking User.findOne method
@@ -108,8 +111,6 @@ describe('GET /api/v1/users/:id', () => {
     expect(response.statusCode).toBe(500);
   });
 });
-jest.mock('bcrypt');
-jest.mock('../app/models/user');
 
 describe('POST /api/v1/users', () => {
   const validUserData = {
@@ -124,7 +125,7 @@ describe('POST /api/v1/users', () => {
     _id: '507f191e810c19729de860ea',
     ...validUserData,
     password: 'hashedPassword',
-    favourite_list: {},
+    favourite_list: [],
     user_type: false
   };
 
@@ -151,7 +152,7 @@ describe('POST /api/v1/users', () => {
       user_name: validUserData.user_name,
       name: validUserData.name,
       family_name: validUserData.family_name,
-      favourite_list: {},
+      favourite_list: [],
       user_type: false
     });
     expect(response.headers.location).toBe(`/api/v1/users/${mockCreatedUser._id}`);
@@ -160,7 +161,7 @@ describe('POST /api/v1/users', () => {
 
   describe('should return 400 Bad Request for invalid data', () => {
     const requiredFields = ['email', 'password', 'user_name', 'name', 'family_name'];
-    
+
     requiredFields.forEach(field => {
       test(`when missing ${field}`, async () => {
         const invalidData = { ...validUserData };
@@ -193,7 +194,7 @@ describe('POST /api/v1/users', () => {
     // Mock duplicate key error (MongoDB error code 11000)
     const duplicateError = new Error('Duplicate key error');
     duplicateError.code = 11000;
-    
+
     User.prototype.save.mockRejectedValueOnce(duplicateError);
     bcrypt.hash.mockResolvedValueOnce('hashedPassword');
 
@@ -225,78 +226,89 @@ describe('POST /api/v1/users', () => {
   });
 });
 
-const request = require('supertest');
-const bcrypt = require('bcrypt');
-const app = require('../app/app');
-const User = require('../app/models/user');
-
-//////////////////////////////
-// PUT /api/v1/users/:id Tests
-//////////////////////////////
 describe('PUT /api/v1/users/:id', () => {
   let userSpy;
-  let saveMock;
+  let updateSpy;
 
-  // CHANGED: Define valid update data (similar structure as for POST but with update fields)
   const validUpdateData = {
     email: 'newemail@example.com',
+    password: 'newpassword',
     user_name: 'newusername',
     name: 'NewName',
     family_name: 'NewFamily',
-    password: 'newpassword', // new password that must differ from the old one
-    favourite_list: { items: [] },
+    favourite_list: ['id_1', 'id_2'],
     user_type: true
   };
 
+  const updatedUser = {
+    _id: 'valid_id',
+    email: validUpdateData.email,
+    user_name: validUpdateData.user_name,
+    name: validUpdateData.name,
+    family_name: validUpdateData.family_name,
+    favourite_list: validUpdateData.favourite_list,
+    user_type: validUpdateData.user_type,
+    password: 'newHashedPassword'
+  };
+
   beforeEach(() => {
-    // CHANGED: Create a mock user with a save function to simulate updating the user
-    saveMock = jest.fn();
     userSpy = jest.spyOn(User, 'findById').mockImplementation((id) => {
       if (id === 'valid_id') {
         return {
           _id: 'valid_id',
           email: 'oldemail@example.com',
-          password: 'oldHashedPassword', // hashed password stored in DB
+          password: 'oldHashedPassword',
           user_name: 'oldusername',
           name: 'OldName',
           family_name: 'OldFamily',
-          favourite_list: {},
+          favourite_list: [],
           user_type: false,
-          save: saveMock
         };
       } else {
         return null;
       }
     });
+
+    updateSpy = jest.spyOn(User, 'findByIdAndUpdate').mockImplementation((id, update, options) => {
+      if (id === 'valid_id') {
+        return updatedUser;
+      } else {
+        return
+      }
+    });
+    saveMock = jest.fn();
+    User.prototype.save = saveMock;
+    bcrypt.hash.mockReset();
+    bcrypt.compare.mockReset();
   });
 
-  afterEach(() => {
+  afterAll(async () => {
     userSpy.mockRestore();
+    updateSpy.mockRestore();
+  });
+
+  
+
+  afterEach(() => {
     jest.resetAllMocks();
   });
 
+  var payload = {
+    id: 'valid_id',
+    email: 'oldemail@example.com'
+  }
+  var options = {
+    expiresIn: 86400
+  }
+  var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
   test('should update user successfully and return 201 with updated user data', async () => {
-    // CHANGED: Mock bcrypt.compare to return false (new password is different)
+
     bcrypt.compare.mockResolvedValueOnce(false);
-    // CHANGED: Mock bcrypt.hash to return the new hashed password
     bcrypt.hash.mockResolvedValueOnce('newHashedPassword');
 
-    // CHANGED: Define the updated user object that should be returned from user.save()
-    const updatedUser = {
-      _id: 'valid_id',
-      email: validUpdateData.email,
-      user_name: validUpdateData.user_name,
-      name: validUpdateData.name,
-      family_name: validUpdateData.family_name,
-      favourite_list: validUpdateData.favourite_list,
-      user_type: validUpdateData.user_type,
-      password: 'newHashedPassword'
-    };
-
-    saveMock.mockResolvedValueOnce(updatedUser);
-
     const response = await request(app)
-      .put(`/api/v1/users/valid_id`)
+      .put(`/api/v1/users/valid_id?token=${token}`)
       .send(validUpdateData);
 
     expect(response.statusCode).toBe(201);
@@ -315,62 +327,70 @@ describe('PUT /api/v1/users/:id', () => {
 
   test('should return 404 if user not found', async () => {
     const response = await request(app)
-      .put('/api/v1/users/nonexistent')
+      .put(`/api/v1/users/non_existent?token=${token}`)
       .send(validUpdateData);
     expect(response.statusCode).toBe(404);
   });
 
-  test('should return 400 if required field is missing', async () => {
-    // CHANGED: Remove a required field (e.g., email) from the update data
-    const invalidData = { ...validUpdateData };
-    delete invalidData.email;
+  describe('should return 400 Bad Request for invalid data', () => {
+    const requiredFields = ['email', 'user_name', 'name', 'family_name'];
 
-    const response = await request(app)
-      .put('/api/v1/users/valid_id')
-      .send(invalidData);
+    requiredFields.forEach(field => {
+      
+      test(`when missing ${field}`, async () => {
+        bcrypt.compare.mockResolvedValueOnce(false);
+        bcrypt.hash.mockResolvedValueOnce('newHashedPassword');
+        const invalidData = { ...validUpdateData };
+        delete invalidData[field];
 
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({
-      error: 'Missing required field: email'
+        const response = await request(app)
+          .put(`/api/v1/users/valid_id?token=${token}`)
+          .send(invalidData);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({
+          error: `Missing required field: ${field}`
+        });
+      });
+    });
+
+    test('with invalid email format', async () => {
+      bcrypt.compare.mockResolvedValueOnce(false);
+      bcrypt.hash.mockResolvedValueOnce('newHashedPassword');
+      const response = await request(app)
+        .put(`/api/v1/users/valid_id?token=${token}`)
+        .send({ ...validUpdateData, email: 'invalid-email' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid email format'
+      });
     });
   });
 
-  test('should return 400 if invalid email format', async () => {
-    // CHANGED: Provide an invalid email format
-    const invalidData = { ...validUpdateData, email: 'invalid-email' };
-
-    const response = await request(app)
-      .put('/api/v1/users/valid_id')
-      .send(invalidData);
-
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({
-      error: 'Invalid email format'
-    });
-  });
 
   test('should return 400 if new password is same as old one', async () => {
-    // CHANGED: Simulate bcrypt.compare returning true (new password matches the old one)
     bcrypt.compare.mockResolvedValueOnce(true);
+    bcrypt.hash.mockResolvedValueOnce('newHashedPassword');
 
     const response = await request(app)
-      .put('/api/v1/users/valid_id')
+      .put(`/api/v1/users/valid_id?token=${token}`)
       .send(validUpdateData);
 
     expect(response.statusCode).toBe(400);
     expect(response.body).toEqual({
-      error: 'Password MUST be different from the previus one'
+      error: 'Password MUST be different from the previous one'
     });
   });
 
   test('should return 500 if error occurs during update', async () => {
     bcrypt.compare.mockResolvedValueOnce(false);
     bcrypt.hash.mockResolvedValueOnce('newHashedPassword');
-    // CHANGED: Simulate a database error during save
-    saveMock.mockRejectedValueOnce(new Error('Database error'));
+    const mockError = new Error('Database error');
+    updateSpy.mockRejectedValueOnce(mockError);
 
     const response = await request(app)
-      .put('/api/v1/users/valid_id')
+      .put(`/api/v1/users/valid_id?token=${token}`)
       .send(validUpdateData);
 
     expect(response.statusCode).toBe(500);
@@ -379,41 +399,59 @@ describe('PUT /api/v1/users/:id', () => {
       details: 'Database error'
     });
   });
+
 });
 
-//////////////////////////////
-// DELETE /api/v1/users/:id Tests
-//////////////////////////////
 describe('DELETE /api/v1/users/:id', () => {
   let deleteSpy;
+  let userSpy;
 
-  beforeEach(() => {
-    // CHANGED: Spy on User.deleteOne and mock a successful deletion response
+  beforeAll(() => {
+    userSpy = jest.spyOn(User, 'findById').mockImplementation((id) => {
+      if (id === 'valid_id') {
+        return {
+          _id: 'valid_id',
+          email: 'oldemail@example.com',
+          password: 'oldHashedPassword', // hashed password stored in DB
+          user_name: 'oldusername',
+          name: 'OldName',
+          family_name: 'OldFamily',
+          favourite_list: {},
+          user_type: false,
+        };
+      } else {
+        return null;
+      }
+    });
     deleteSpy = jest.spyOn(User, 'deleteOne').mockResolvedValue({ deletedCount: 1 });
-  });
+  })
 
-  afterEach(() => {
+
+  afterAll(() => {
     deleteSpy.mockRestore();
+    userSpy.mockRestore();
     jest.resetAllMocks();
   });
 
+  var payload = {
+    id: 'valid_id',
+    email: 'oldemail@example.com'
+  }
+  var options = {
+    expiresIn: 86400
+  }
+  var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
   test('should delete user and return 204', async () => {
     const response = await request(app)
-      .delete('/api/v1/users/valid_id');
+      .delete(`/api/v1/users/valid_id?token=${token}`);
     expect(response.statusCode).toBe(204);
   });
 
-  test('should return 500 if error occurs during deletion', async () => {
-    // CHANGED: Simulate an error during deletion
-    deleteSpy.mockRejectedValueOnce(new Error('Deletion error'));
-
+  test('should return 404 if no user found', async () => {
     const response = await request(app)
-      .delete('/api/v1/users/valid_id');
+      .delete(`/api/v1/users/invalid_id?token=${token}`);
 
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({
-      error: 'Internal Server Error',
-      details: 'Deletion error'
-    });
+    expect(response.statusCode).toBe(404);
   });
 });

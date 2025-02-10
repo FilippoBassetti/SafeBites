@@ -7,9 +7,9 @@ const authentication = require('./middlewares/authentication.js');
 const tokenChecker = require('./middlewares/tokenChecker.js');
 
 const restaurants = require('./controllers/restaurants.js');
-const users = require('./controllers//users.js')
-const reviews = require('./controllers//reviews.js')
-const ratings = require('./controllers//ratings.js')
+const users = require('./controllers/users.js')
+const reviews = require('./controllers/reviews.js')
+const ratings = require('./controllers/ratings.js')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
