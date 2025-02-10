@@ -84,7 +84,7 @@ router.post('', async (req, res) => {
             user_name: req.body.user_name,
             name: req.body.name,
             family_name: req.body.family_name,
-            favourite_list: req.body.favourite_list || {},
+            favourite_list: req.body.favourite_list || [],
             user_type: req.body.user_type || false
         });
 
@@ -111,16 +111,17 @@ router.post('', async (req, res) => {
     }
 });
 
-// Update user 
-router.put('/:{id}', async (req, res) => {
+
+router.put('/:id', async (req, res) => {
     console.log('Received PUT request with body:', req.body);
     try {
         // find user
         let user = await User.findById(req.params.id);
         if (!user) {
-            console.log('User not found');
+            console.log('User not found.');
             return res.status(404).send();
         }
+
 
         //check body and sanitize input
         const requiredFields = ['email', 'user_name', 'name', 'family_name'];
@@ -130,9 +131,13 @@ router.put('/:{id}', async (req, res) => {
             }
         }
 
-        if(await bcrypt.compare(password, user.password)) {
-            return res.status(400).json({ error: 'Password MUST be different from the previus one' });
+        if (req.body.password) {
+            if (await bcrypt.compare(req.body.password, user.password)) {
+                return res.status(400).json({ error: 'Password MUST be different from the previous one' });
+            }
+            req.body.password = await bcrypt.hash(req.body.password, 10);
         }
+
 
         // validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -148,13 +153,26 @@ router.put('/:{id}', async (req, res) => {
             user[field] = req.body[field];
         });
 
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-        if(req.body.password){
-            user.password = hashedPassword;
+        let updateData = {};
+        updatableFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
+            }
+        });
+
+        // Update user and return the modified document
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
         }
 
-        const updatedUser = await user.save();
+        //const updatedUser = await User.updateOne(user);
 
         const responseData = {
             id: updatedUser._id,
@@ -179,10 +197,16 @@ router.put('/:{id}', async (req, res) => {
 
 
 router.delete('/:id', async (req, res) => {
-    let user = req['user'];
-    await User.deleteOne({ _id: req.params.id });
-    console.log('user removed')
-    res.status(204).send()
-});
+    let user  = await User.findById(req.params.id);
+        if (!user) {
+            res.status(404).send()
+            console.log('user not found')
+            return;
+        }
+        await User.deleteOne({_id : req.params.id});
+        console.log('user removed')
+        res.status(204).send()
+    });
+
 
 module.exports = router;

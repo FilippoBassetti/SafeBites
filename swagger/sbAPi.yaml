@@ -302,12 +302,12 @@ paths:
           description: User deleted successfully (No Content).
         "404":
           description: User not found.
-  /rating/{rest_id}:
+  /rating/{restaurant_id}:
     get:
       summary: View all ratings for a restaurant
       description: "Retrieves a list of all ratings for the specified restaurant. Optionally, filter by the user who left the rating."
       parameters:
-      - name: rest_id
+      - name: restaurant_id
         in: path
         description: The ID of the rated restaurant.
         required: true
@@ -418,12 +418,12 @@ paths:
               explode: false
               schema:
                 type: string
-  /review/{rest_id}:
+  /review/{restaurant_id}:
     get:
       summary: View all reviews for a restaurant
       description: Retrieves a list of all reviews for the specified restaurant.
       parameters:
-      - name: rest_id
+      - name: restaurant_id
         in: path
         description: The ID of the reviewed restaurant.
         required: true
@@ -653,7 +653,7 @@ components:
     Rating:
       required:
       - rating
-      - rest_id
+      - restaurant_id
       - user_id
       type: object
       properties:
@@ -670,7 +670,7 @@ components:
           description: Rating given by the user.
     Review:
       required:
-      - rest_id
+      - restaurant_id
       - text
       - user_id
       type: object
