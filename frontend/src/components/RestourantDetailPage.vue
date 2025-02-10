@@ -223,6 +223,7 @@ export default {
       searchQuery: '',
       restaurant: {
         profile_url: '',
+        id: '',
         name: '',
         address: '',
         category: '',
@@ -344,18 +345,15 @@ export default {
         return;
     }
 
-    const headers = {
-        Authorization: `Bearer ${token}`
-    };
-
     try {
         // Controlla se l'utente ha già dato una valutazione
-        const existingRating = await this.getUserRating(user.id, headers);
+        const existingRating = await this.getUserRating(user.id);
 
         const payload = {
             rest_id: this.restaurant.id,
             user_id: user.id,
-            rating: this.newRating
+            rating: this.newRating,
+            token: token
         };
 
         if (existingRating) {
@@ -363,11 +361,10 @@ export default {
             await axios.put(
                 `http://localhost:8081/api/v1/ratings/${this.restaurant.id}?user_id=${user.id}`,
                 { rating: this.newRating }, // Invia solo il rating
-                { headers }
             );
         } else {
             // Crea una nuova valutazione
-            await axios.post('http://localhost:8081/api/v1/ratings', payload, { headers });
+            await axios.post('http://localhost:8081/api/v1/ratings', payload);
         }
 
         // Aggiorna le valutazioni e imposta la nuova valutazione dell'utente
@@ -380,11 +377,10 @@ export default {
     }
 },
 
-async getUserRating(userId, headers) {
+async getUserRating(userId) {
     try {
         const response = await axios.get(
             `http://localhost:8081/api/v1/ratings/${this.restaurant.id}?user_id=${userId}`,
-            { headers }
         );
         return response.data.ratings.length > 0 ? response.data.ratings[0] : null;
     } catch (error) {
