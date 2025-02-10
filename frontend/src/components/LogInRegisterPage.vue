@@ -168,9 +168,11 @@ export default {
         let response;
         if (this.isLogin) {
           console.log(authData);
-          response = await axios.post('http://localhost:8081/api/v1/authentication', authData);
+          response = await axios.post('http://localhost:8081/api/v1/authentications', authData);
+          console.log(response);
         } else {
           response = await axios.post('http://localhost:8081/api/v1/users', authData);
+          console.log(response);
         }
         console.log(`${this.isLogin ? 'Login' : 'Registration'} successful:`, response.data);
 
