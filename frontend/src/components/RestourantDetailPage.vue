@@ -92,7 +92,7 @@
         <p class="text-gray-600">Category: {{ restaurant.category }}</p>
         <p class="text-gray-600">Price: {{ restaurant.price }}</p>
         <p class="text-gray-600">Status: {{ isOpen ? "Open" : "Closed" }}</p>
-        <p class="text-gray-600">Rating: {{ restaurant.rating }} ⭐</p>
+        <p class="text-gray-600">Rating: {{ currentRating.toFixed(1) }} ⭐ ({{ totalRatings }} ratings)</p>
       </div>
     </div>
 
@@ -177,7 +177,7 @@
           class="bg-white p-4 rounded-lg shadow-md" 
         >
           <p class="text-gray-700">{{ review.text }}</p>
-          <p class="text-gray-500 text-sm">By user: {{ review.user_id }}</p>
+          <p class="text-gray-500 text-sm">By user: {{ review.username }}</p>
         </div>
       </div>
       <div v-else>
@@ -254,16 +254,18 @@ export default {
   },
   methods: {
     async fetchRestaurantData() {
-      try {
+    try {
         const response = await axios.get(`http://localhost:8081/api/v1/restaurants/${this.$route.params.id}`);
         this.restaurant = response.data;
         this.checkOpenStatus();
-        // Carica le recensioni dopo aver ottenuto i dati del ristorante
-        this.fetchReviews();
-      } catch (error) {
+        await Promise.all([
+            this.fetchReviews(),
+            this.fetchRatings() // Fetch ratings in parallel with reviews
+        ]);
+    } catch (error) {
         console.error('Error fetching restaurant data:', error);
-      }
-    },
+    }
+},
     checkOpenStatus() {
       const now = new Date();
       const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
@@ -276,6 +278,27 @@ export default {
       this.newRating = star;
     }
   },
+  async fetchRatings() {
+    try {
+        const response = await axios.get(
+            `http://localhost:8081/api/v1/ratings/${this.restaurant.id}`
+        );
+        
+        const ratings = response.data.ratings;
+        this.totalRatings = ratings.length;
+        
+        if (this.totalRatings > 0) {
+            const sum = ratings.reduce((acc, curr) => acc + curr.rating, 0);
+            this.currentRating = sum / this.totalRatings;
+        } else {
+            this.currentRating = 0;
+        }
+    } catch (error) {
+        console.error('Error fetching ratings:', error);
+        this.currentRating = 0;
+        this.totalRatings = 0;
+    }
+},
     toggleFavorite() {
       this.isFavorite = !this.isFavorite;
       // Aggiungi qui eventuale chiamata API per aggiornare i preferiti dell'utente
@@ -300,40 +323,97 @@ export default {
     loadRestaurants() {
       // Implementa la logica per il caricamento dei ristoranti, se necessario
     },
-    async fetchReviews() {
-      try {
-        const res = await axios.get(`http://localhost:8081/api/v1/reviews/${this.restaurant.id}`);
-        // Il backend restituisce un oggetto { reviews: [...] }
-        this.reviews = res.data.reviews;
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-        this.reviews = [];
-      }
-    },
     async submitReview() {
-      if (!this.isLoggedIn) {
+    if (!this.isLoggedIn) {
         alert('You must be logged in to leave a review.');
         return;
-      }
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user) {
-        alert('User information not found.');
+    }
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+
+    if (!user || !user.id || !token) {
+        alert('Session expired. Please log in again.');
         return;
-      }
-      try {
-        await axios.post('http://localhost:8081/api/v1/reviews', {
-          rest_id: this.restaurant.id,
-          user_id: user.id,
-          text: this.newReviewText
-        });
+    }
+
+    try {
+        // Check for existing review
+        const existingReview = await this.getUserReview(user.id);
+
+        const payload = {
+            restaurant_id: this.restaurant.id, // Match backend field name
+            user_id: user.id,
+            text: this.newReviewText,
+            token: token // Include token in body
+        };
+
+        if (existingReview) {
+            // Update existing review using PUT
+            await axios.put(
+                `http://localhost:8081/api/v1/reviews/${this.restaurant.id}?user_id=${user.id}`,
+                payload
+            );
+        } else {
+            // Create new review using POST
+            await axios.post('http://localhost:8081/api/v1/reviews', payload);
+        }
+
         alert('Review submitted successfully!');
         this.newReviewText = '';
-        this.fetchReviews();
-      } catch (error) {
+        this.fetchReviews(); // Refresh the list
+
+    } catch (error) {
         console.error('Error submitting review:', error);
-        alert('Error submitting review.');
-      }
-    },
+        alert(error.response?.data?.error || 'Error submitting review.');
+    }
+},
+async fetchReviews() {
+    try {
+      const res = await axios.get(
+        `http://localhost:8081/api/v1/reviews/${this.restaurant.id}`
+      );
+      
+      // Fetch usernames for each review
+      const reviewsWithUsernames = await Promise.all(
+        res.data.reviews.map(async review => {
+          try {
+            const userRes = await axios.get(
+              `http://localhost:8081/api/v1/users/${review.user_id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+              }
+            );
+            return { 
+              ...review,
+              username: userRes.data.user_name
+            };
+          } catch (error) {
+            console.error('Error fetching username:', error);
+            return { ...review, username: 'Anonymous' };
+          }
+        })
+      );
+
+      this.reviews = reviewsWithUsernames;
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      this.reviews = [];
+    }
+  },
+
+async getUserReview(userId) {
+    try {
+        const response = await axios.get(
+            `http://localhost:8081/api/v1/reviews/${this.restaurant.id}?user_id=${userId}`
+        );
+        return response.data.reviews.length > 0 ? response.data.reviews[0] : null;
+    } catch (error) {
+        return null;
+    }
+},
     async submitRating() {
     if (!this.isLoggedIn) return;
 
@@ -346,31 +426,35 @@ export default {
     }
 
     try {
-        // Controlla se l'utente ha già dato una valutazione
+        // Check for existing rating
         const existingRating = await this.getUserRating(user.id);
 
         const payload = {
-            rest_id: this.restaurant.id,
+            restaurant_id: this.restaurant.id, // Match backend field name
             user_id: user.id,
             rating: this.newRating,
-            token: token
+            token: token // Include token in the body
         };
 
         if (existingRating) {
-            // Aggiorna la valutazione esistente
+            // Update rating: include all required fields in the body
             await axios.put(
                 `http://localhost:8081/api/v1/ratings/${this.restaurant.id}?user_id=${user.id}`,
-                { rating: this.newRating }, // Invia solo il rating
+                payload // Send full payload
             );
         } else {
-            // Crea una nuova valutazione
+            // Create new rating
             await axios.post('http://localhost:8081/api/v1/ratings', payload);
         }
 
-        // Aggiorna le valutazioni e imposta la nuova valutazione dell'utente
+        // Refresh ratings and update 
         await this.fetchRatings();
         this.userRating = this.newRating;
         alert('Rating submitted successfully!');
+        
+        // Optional: Fetch updated average rating
+        // await this.fetchAverageRating();
+
     } catch (error) {
         console.error('Error submitting rating:', error);
         alert(error.response?.data?.error || 'Error submitting rating.');
