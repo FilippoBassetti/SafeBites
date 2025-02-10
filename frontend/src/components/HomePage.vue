@@ -88,16 +88,6 @@ const slides = [
         title: "Page 1",
         content: "RISTORANTI VICINI A TE",
         route: "/MainPage"
-    },
-    {
-        title: "Page 2",
-        content: "I PIATTI DELLA TRADIZIONE",
-        route: "/TraditionalFood"
-    },
-    {
-        title: "Page 3",
-        content: "PERCORSI ENOGASTRONOMICI",
-        route: "/EnogastronomicPaths"
     }
 ];
 
