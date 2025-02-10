@@ -6,10 +6,6 @@ const jwt = require('jsonwebtoken');
 
 router.post('', async function (req, res) {
 
-    var user = {};
-
-    
-
         if (!req.body.email || !req.body.password) {
             return res.status(400).json({ success: false, message: 'Authentication failed: Email and password are required.' });
         }
