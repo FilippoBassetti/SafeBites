@@ -84,7 +84,7 @@ router.post('', async (req, res) => {
             user_name: req.body.user_name,
             name: req.body.name,
             family_name: req.body.family_name,
-            favourite_list: req.body.favourite_list || {},
+            favourite_list: req.body.favourite_list || [],
             user_type: req.body.user_type || false
         });
 
@@ -130,7 +130,7 @@ router.put('/:{id}', async (req, res) => {
             }
         }
 
-        if(await bcrypt.compare(password, user.password)) {
+        if(await bcrypt.compare(req.body.password, user.password)) {
             return res.status(400).json({ error: 'Password MUST be different from the previus one' });
         }
 
