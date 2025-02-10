@@ -7,6 +7,7 @@
         v-for="(coord, index) in restaurantCoords"
         :key="index"
         :lat-lng="coord"
+        :icon=redIcon
       />
     </l-map>
   </div>
@@ -18,8 +19,20 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { LMap, LTileLayer, LMarker } from 'vue3-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-/* eslint-disable no-undef */
+import { defineProps } from 'vue';
+
+const redIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize:     [38, 95], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [4, 62],  // the same for the shadow
+    popupAnchor:  [-3, -76]
+});
+
 const props = defineProps({
   restaurants: {
     type: Array,
@@ -66,7 +79,8 @@ watch(
       if (coord) coords.push(coord);
     }
     restaurantCoords.value = coords;
-  }
+  },
+  { immediate: true }
 );
 
 async function geocodeAddress(addr) {
@@ -89,17 +103,13 @@ async function geocodeAddress(addr) {
 </script>
 
 <style scoped>
+/* Keep existing styles unchanged */
 .map-container {
   width: 100%;
   height: 100%;
   position: relative;
-  border-radius: 15px; /* Arrotonda gli angoli della mappa */
-  overflow: hidden; /* Nasconde le parti fuori dal bordo arrotondato */
-}
-
-:host {
-  display: block;
-  height: 400px;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 .loading {

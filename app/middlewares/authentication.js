@@ -14,7 +14,6 @@ router.post('', async function (req, res) {
             return res.status(400).json({ success: false, message: 'Authentication failed: Email and password are required.' });
         }
 
-
         const user = await User.findOne({ email: req.body.email }).exec();
         
         if (!user) {
@@ -22,7 +21,7 @@ router.post('', async function (req, res) {
         }
 
 
-        if (!(await bcrypt.compare(password, user.password))) {
+        if (!(await bcrypt.compare(req.body.password, user.password))) {
             return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
         }
 
@@ -49,4 +48,3 @@ router.post('', async function (req, res) {
 });
 
 module.exports = router;
-

@@ -23,7 +23,7 @@
                 <!-- User Icon -->
                 <div class="flex items-center space-x-2">
                     <img src="../assets/user_icon.png" class="h-14 w-14 mt-4"
-                    @click="navigateTo('/userPage')">
+                    @click="conditionalNavigateTo()">
                 </div>
             </div>
         </header>
@@ -116,7 +116,20 @@ const goToSlide = (index) => {
 const navigateTo = (route) => {
     router.push(route);
 };
-
+const conditionalNavigateTo = () => {
+    if(localStorage.getItem('token')){
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(user.user_type == 'true'){
+            navigateTo('/RestaurantPrivate');
+        }
+        else{
+            navigateTo('/UserPage');
+        }
+    }
+    else{
+        navigateTo('/Access');
+    }
+};
 </script>
 <style>
 .flex {
