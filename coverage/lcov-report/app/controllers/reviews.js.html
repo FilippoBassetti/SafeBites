@@ -426,17 +426,17 @@ const router = express.Router();
 const Review = require('../models/review');
 &nbsp;
 // Get reviews for a restaurant, optionally filtered by user
-router.get('/:rest_id', async (req, res) =&gt; {
+router.get('/:restaurant_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >        let reviews;</span>
 <span class="cstat-no" title="statement not covered" >        // Check for user_id query parameter</span>
 <span class="cstat-no" title="statement not covered" >        if (req.query.user_id) {</span>
 <span class="cstat-no" title="statement not covered" >            reviews = await Review.find({ </span>
-<span class="cstat-no" title="statement not covered" >                rest_id: req.params.rest_id, </span>
+<span class="cstat-no" title="statement not covered" >                restaurant_id: req.params.restaurant_id, </span>
 <span class="cstat-no" title="statement not covered" >                user_id: req.query.user_id </span>
 <span class="cstat-no" title="statement not covered" >            }).exec();</span>
 <span class="cstat-no" title="statement not covered" >        } else {</span>
-<span class="cstat-no" title="statement not covered" >            reviews = await Review.find({ rest_id: req.params.rest_id });</span>
+<span class="cstat-no" title="statement not covered" >            reviews = await Review.find({ restaurant_id: req.params.restaurant_id });</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // Handle no results case</span>
@@ -446,7 +446,7 @@ router.get('/:rest_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // Format response to exclude database internals</span>
 <span class="cstat-no" title="statement not covered" >        reviews = reviews.map(review =&gt; ({</span>
-<span class="cstat-no" title="statement not covered" >            rest_id: review.rest_id,</span>
+<span class="cstat-no" title="statement not covered" >            restaurant_id: review.restaurant_id,</span>
 <span class="cstat-no" title="statement not covered" >            user_id: review.user_id,</span>
 <span class="cstat-no" title="statement not covered" >            text: review.text</span>
 <span class="cstat-no" title="statement not covered" >        }));</span>
@@ -464,7 +464,7 @@ router.post('', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >    console.log('Received POST request with body:', req.body);</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >        // Validate required fields</span>
-<span class="cstat-no" title="statement not covered" >        const requiredFields = ['rest_id', 'user_id', 'text'];</span>
+<span class="cstat-no" title="statement not covered" >        const requiredFields = ['restaurant_id', 'user_id', 'text'];</span>
 <span class="cstat-no" title="statement not covered" >        for (const field of requiredFields) {</span>
 <span class="cstat-no" title="statement not covered" >            if (!req.body[field]) {</span>
 <span class="cstat-no" title="statement not covered" >                return res.status(400).json({ error: `Missing required field: ${field}` });</span>
@@ -473,7 +473,7 @@ router.post('', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // Create and save new review</span>
 <span class="cstat-no" title="statement not covered" >        let review = new Review({</span>
-<span class="cstat-no" title="statement not covered" >            rest_id: req.body.rest_id,</span>
+<span class="cstat-no" title="statement not covered" >            restaurant_id: req.body.restaurant_id,</span>
 <span class="cstat-no" title="statement not covered" >            user_id: req.body.user_id,</span>
 <span class="cstat-no" title="statement not covered" >            text: req.body.text</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
@@ -483,7 +483,7 @@ router.post('', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >        // Build response with location header</span>
 <span class="cstat-no" title="statement not covered" >        const responseData = {</span>
 <span class="cstat-no" title="statement not covered" >            self: '/api/v1/review/' + review._id,</span>
-<span class="cstat-no" title="statement not covered" >            rest_id: review.rest_id,</span>
+<span class="cstat-no" title="statement not covered" >            restaurant_id: review.restaurant_id,</span>
 <span class="cstat-no" title="statement not covered" >            user_id: review.user_id,</span>
 <span class="cstat-no" title="statement not covered" >            text: review.text</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
@@ -499,7 +499,7 @@ router.post('', async (req, res) =&gt; {
 });
 &nbsp;
 // Update existing review
-router.put('/:rest_id', async (req, res) =&gt; {
+router.put('/:restaurant_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >        // Validate required query parameter</span>
 <span class="cstat-no" title="statement not covered" >        if (!req.query.user_id) {</span>
@@ -508,7 +508,7 @@ router.put('/:rest_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // Find existing review</span>
 <span class="cstat-no" title="statement not covered" >        let review = await Review.findOne({ </span>
-<span class="cstat-no" title="statement not covered" >            rest_id: req.params.rest_id, </span>
+<span class="cstat-no" title="statement not covered" >            restaurant_id: req.params.restaurant_id, </span>
 <span class="cstat-no" title="statement not covered" >            user_id: req.query.user_id </span>
 <span class="cstat-no" title="statement not covered" >        }).exec();</span>
 <span class="cstat-no" title="statement not covered" >        </span>
@@ -525,8 +525,8 @@ router.put('/:rest_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // Verify ID consistency</span>
-<span class="cstat-no" title="statement not covered" >        if (req.body.rest_id !== req.params.rest_id) {</span>
-<span class="cstat-no" title="statement not covered" >            return res.status(400).json({ error: "rest_id mismatch" });</span>
+<span class="cstat-no" title="statement not covered" >        if (req.body.restaurant_id !== req.params.restaurant_id) {</span>
+<span class="cstat-no" title="statement not covered" >            return res.status(400).json({ error: "restaurant_id mismatch" });</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >        if (req.body.user_id !== req.query.user_id) {</span>
 <span class="cstat-no" title="statement not covered" >            return res.status(400).json({ error: "user_id mismatch" });</span>
@@ -539,7 +539,7 @@ router.put('/:rest_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >        // Build response</span>
 <span class="cstat-no" title="statement not covered" >        const responseData = {</span>
 <span class="cstat-no" title="statement not covered" >            self: '/api/v1/review/' + review._id,</span>
-<span class="cstat-no" title="statement not covered" >            rest_id: review.rest_id,</span>
+<span class="cstat-no" title="statement not covered" >            restaurant_id: review.restaurant_id,</span>
 <span class="cstat-no" title="statement not covered" >            user_id: review.user_id,</span>
 <span class="cstat-no" title="statement not covered" >            text: review.text</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
@@ -564,7 +564,7 @@ router.put('/:rest_id', async (req, res) =&gt; {
 });
 &nbsp;
 // Delete review
-router.delete('/:rest_id', async (req, res) =&gt; {
+router.delete('/:restaurant_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >        // Validate required query parameter</span>
 <span class="cstat-no" title="statement not covered" >        if (!req.query.user_id) {</span>
@@ -573,7 +573,7 @@ router.delete('/:rest_id', async (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >        </span>
 <span class="cstat-no" title="statement not covered" >        // Find and verify review exists</span>
 <span class="cstat-no" title="statement not covered" >        let review = await Review.findOne({ </span>
-<span class="cstat-no" title="statement not covered" >            rest_id: req.params.rest_id, </span>
+<span class="cstat-no" title="statement not covered" >            restaurant_id: req.params.restaurant_id, </span>
 <span class="cstat-no" title="statement not covered" >            user_id: req.query.user_id </span>
 <span class="cstat-no" title="statement not covered" >        }).exec();</span>
 <span class="cstat-no" title="statement not covered" >        </span>
@@ -607,7 +607,7 @@ module.exports = router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-10T10:27:15.224Z
+                at 2025-02-10T19:17:28.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

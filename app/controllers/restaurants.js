@@ -5,7 +5,7 @@ const Restaurant = require('../models/restaurant'); // get our mongoose model
 
 router.get('/by-user/:user_id', async (req, res) => {
     try {
-        const restaurant = await Restaurant.findOne({ user_id: req.params.user_id }).exec();
+        const restaurant = await Restaurant.findOne({ user_id: req.params.user_id });
 
         if (!restaurant) {
             return res.status(404).json({ error: 'No restaurant found for this user' });
@@ -36,7 +36,7 @@ router.get('/by-user/:user_id', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         // https://mongoosejs.com/docs/api.html#model_Model.findById
-        let restaurant = await Restaurant.findById(req.params.id).exec();
+        let restaurant = await Restaurant.findById(req.params.id);
         if (!restaurant) {
             res.status(404).send()
             console.log('restaurant not found')
@@ -81,12 +81,14 @@ router.get('', async (req, res) => {
 
         // Text search across multiple fields
         if (search) {
-            const searchRegex = new RegExp(search.join('|'), 'i'); // Case-insensitive search
+            const searchArray = Array.isArray(search) ? search : [search];
+            const searchRegex = new RegExp(searchArray.join('|'), 'i');
+
             query.$or = [
                 { name: searchRegex },
                 { address: searchRegex },
                 { category: searchRegex },
-                { 'dishes.name': searchRegex }
+                { dishes: { $elemMatch: { name: searchRegex } } } // Correct handling for nested field
             ];
         }
 
@@ -209,7 +211,7 @@ router.post('', async (req, res) => {
 router.put('/:id', async (req, res) => {
     console.log('Received PUT request with body:', req.body);
     try {
-        let restaurant = await Restaurant.findById(req.params.id).exec();
+        let restaurant = await Restaurant.findById(req.params.id);
         if (!restaurant) {
             return res.status(404).json({ error: 'Restaurant not found' });
         }
@@ -290,13 +292,13 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-    let restaurant = await Restaurant.findById(req.params.id).exec();;
+    let restaurant = await Restaurant.findById(req.params.id);;
     if (!restaurant) {
         res.status(404).send()
         console.log('restaurant not found')
         return;
     }
-    await restaurant.deleteOne({_id : req.params.id})
+    await Restaurant.deleteOne({_id : req.params.id})
     console.log('restaurant removed')
     res.status(204).send()
 });

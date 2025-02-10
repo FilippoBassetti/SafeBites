@@ -287,7 +287,7 @@ describe('PUT /api/v1/users/:id', () => {
     updateSpy.mockRestore();
   });
 
-  
+
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -336,7 +336,7 @@ describe('PUT /api/v1/users/:id', () => {
     const requiredFields = ['email', 'user_name', 'name', 'family_name'];
 
     requiredFields.forEach(field => {
-      
+
       test(`when missing ${field}`, async () => {
         bcrypt.compare.mockResolvedValueOnce(false);
         bcrypt.hash.mockResolvedValueOnce('newHashedPassword');
@@ -430,7 +430,6 @@ describe('DELETE /api/v1/users/:id', () => {
   afterAll(() => {
     deleteSpy.mockRestore();
     userSpy.mockRestore();
-    jest.resetAllMocks();
   });
 
   var payload = {
