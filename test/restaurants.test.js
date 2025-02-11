@@ -293,7 +293,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by category', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ categories: 'Italian' });
+      .query({ categoria: 'Italian' });
     
     expect(response.body.length).toBe(1);
     expect(response.body[0].category).toBe('Italian');
@@ -302,7 +302,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by multiple categories', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ categories: ['Italian', 'Mexican'] });
+      .query({ categoria: ['Italian', 'Mexican'] });
     
     expect(response.body.length).toBe(2);
   });
@@ -310,7 +310,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by dish names', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ dishes: ['Tacos', 'Lasagna'] });
+      .query({ pietanze: ['Tacos', 'Lasagna'] });
     
     expect(response.body.length).toBe(2);
     expect(response.body.some(r => r.name === 'Pasta Paradise')).toBe(true);
@@ -329,7 +329,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by minimum rating', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ rating: 4 });
+      .query({ valutazioni: 4 });
     
     expect(response.body.length).toBe(1);
     expect(response.body[0].name).toBe('Pasta Paradise');
@@ -338,7 +338,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by exact price', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ price: 2 });
+      .query({ costo: 2 });
     
     expect(response.body.length).toBe(1);
     expect(response.body[0].name).toBe('Taco Heaven');
@@ -347,7 +347,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by current time', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ open_now: 15 }); // 3 PM (15:00)
+      .query({ orario: 15 }); // 3 PM (15:00)
     
     expect(response.body.length).toBe(2);
   });
@@ -364,7 +364,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should filter by certificate', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ certificate: 'true' });
+      .query({ tolleranzaContaminazioni: 'true' });
     
     expect(response.body.length).toBe(1);
     expect(response.body[0].name).toBe('Pasta Paradise');
@@ -374,10 +374,10 @@ describe('GET /api/v1/restaurants with filters', () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
       .query({
-        categories: 'Mexican',
-        rating: 3.5,
-        price: 2,
-        certificate: 'false'
+        categoria: 'Mexican',
+        valutazioni: 3.5,
+        costo: 2,
+        tolleranzaContaminazioni: 'false'
       });
     
     expect(response.body.length).toBe(1);
@@ -387,7 +387,7 @@ describe('GET /api/v1/restaurants with filters', () => {
   test('should handle no results', async () => {
     const response = await request(app)
       .get('/api/v1/restaurants')
-      .query({ categories: 'Japanese' });
+      .query({ categoria: 'Japanese' });
     
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(0);
