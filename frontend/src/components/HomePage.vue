@@ -109,7 +109,7 @@ const navigateTo = (route) => {
 const conditionalNavigateTo = () => {
     if(localStorage.getItem('token')){
         const user = JSON.parse(localStorage.getItem('user'));
-        if(user.user_type == 'true'){
+        if(user.user_type == true){
             navigateTo('/RestaurantPrivate');
         }
         else{
