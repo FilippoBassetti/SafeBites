@@ -35,7 +35,7 @@
         </p>
         <button
     @click="handleChangeName"
-    class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2"
+    class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors"
   >
     Change Name/Surname
   </button>
@@ -104,7 +104,7 @@
     
         <button
           @click="handleChangePassword"
-          class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2"
+          class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors "
         >
           Change Password
         </button>
