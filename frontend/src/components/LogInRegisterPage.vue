@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="ml-6">
-        <img src="../assets/safebites_logo.png" alt="Logo" />
+        <img src="../assets/safebites_logo.png" alt="Logo" @click="navigateTo('/Home')" />
       </div>
       <h2 class="mt-6 text-center text-3xl font-agatholight text-gray-900">
         {{ isLogin ? 'SIGN IN TO YOUR ACCOUNT' : 'CREATE NEW ACCOUNT' }}
@@ -185,14 +185,17 @@ export default {
         // Salva token e dati utente in localStorage
 
         alert(`${this.isLogin ? 'Login' : 'Registration'} successful!`);
+        const user= await axios.get(`http://localhost:8081/api/v1/users/${response.data.id}`, {
+          token: response.data.token
+        });
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify({
-          id: response.data.id,
-          email: response.data.email,
+          id: user.data.id,
+          email: user.data.email,
           user_name: this.user_name,
           name: this.name,
           family_name: this.family_name,
-          user_type: response.data.user_type
+          user_type: user.data.user_type
         }));
         this.$router.push('/Home');
       } catch (error) {

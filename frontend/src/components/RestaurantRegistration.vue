@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="flex justify-center mb-4">
-        <img src="../assets/safebites_logo.png" alt="Logo" class="h-12" />
+        <img src="../assets/safebites_logo.png" alt="Logo" class="h-12" @click="navigateTo('/Home')"/>
       </div>
       <h2 class="mt-6 text-center text-3xl font-extrabold text-red-600">
         Register as a Restaurant Owner
@@ -335,7 +335,10 @@ export default {
       this.restaurantOpeningDays.sunday ? 1 : 0
     ];
 
-    const openingHoursArray = this.openingHoursInput.split(',').map(hour => hour.trim());
+    const openingHoursArray = this.openingHoursInput
+  .split(',')
+  .map(hour => hour.trim().split('-').map(num => parseInt(num, 10)))
+  .filter(range => range.length === 2 && range.every(n => !isNaN(n)));
 
     const authenticate = await axios.post('http://localhost:8081/api/v1/authentications', {
       email: userResponse.data.email,
@@ -343,16 +346,31 @@ export default {
     });
 
     const token = authenticate.data.token;
+
+    localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify({
+          id: userId,
+          email: this.userFields.email.model,
+          user_name: this.userFields.username.model,
+          name: this.userFields.firstName.model,
+          family_name: this.userFields.lastName.model,
+          user_type: userResponse.data.user_type
+        }));
     const restaurantResponse = await axios.post('http://localhost:8081/api/v1/restaurants', {
-      restaurant_name: this.restaurantFields.restaurantName.model,
-      restaurant_address: this.restaurantFields.restaurantAddress.model,
-      restaurant_photo_url: this.restaurantFields.restaurantPhoto.model,
-      restaurant_categories: this.restaurantCategories,
-      restaurant_cost: this.selectedCost,
-      restaurant_dishes: this.restaurantDishes,
-      restaurant_hours: openingHoursArray,
-      restaurant_opening_days: openingDaysArray, // Qui inviamo l'array corretto
-      aic_certified: this.certificate,
+      name: this.restaurantFields.restaurantName.model,
+      address: this.restaurantFields.restaurantAddress.model,
+      profile_url: this.restaurantFields.restaurantPhoto.model,
+      category: this.restaurantCategories,
+      price: this.selectedCost,
+      email: this.userFields.email.model,
+      dishes: this.restaurantDishes.map(dish => ({
+  name: dish,
+  url: "dummyurl.com"
+})),
+
+      opening_hours: openingHoursArray,
+      opening_days: openingDaysArray, // Qui inviamo l'array corretto
+      certificate: this.certificate,
       user_id: userId,
       token: token
     });
