@@ -238,14 +238,14 @@ export default {
   methods: {
     async fetchRestaurantData() {
       try {
-        const response = await axios.get(`http://localhost:8081/api/v1/restaurants/${this.$route.params.id}`);
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/restaurants/${this.$route.params.id}`);
         this.restaurant = response.data;
         this.checkOpenStatus();
         
         if (this.isLoggedIn) {
   const user = JSON.parse(localStorage.getItem('user'));
   const userRes = await axios.get(
-    `http://localhost:8081/api/v1/users/${user.id}`,
+    `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
     { 
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } 
     } // ✅ Corrected closing bracket here
@@ -273,7 +273,7 @@ export default {
   async fetchRatings() {
     try {
         const response = await axios.get(
-            `http://localhost:8081/api/v1/ratings/${this.restaurant.id}`
+            `${process.env.VUE_APP_API_URL}/api/v1/ratings/${this.restaurant.id}`
         );
         
         const ratings = response.data.ratings;
@@ -303,7 +303,7 @@ async toggleFavorite() {
       try {
         // Get current user data
         const userRes = await axios.get(
-          `http://localhost:8081/api/v1/users/${user.id}`,
+          `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -314,7 +314,7 @@ async toggleFavorite() {
 
         // Update user
         await axios.put(
-          `http://localhost:8081/api/v1/users/${user.id}`,
+          `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
           {
             ...userRes.data,
             favourite_list: newFavorites,
@@ -355,7 +355,7 @@ async deleteReview(review) {
       try {
         const token = localStorage.getItem('token');
         await axios.delete(
-          `http://localhost:8081/api/v1/reviews/${this.restaurant.id}?user_id=${review.user_id}`,
+          `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}?user_id=${review.user_id}`,
           { data: { token } }
         );
         await this.fetchReviews();
