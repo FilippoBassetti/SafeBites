@@ -454,6 +454,7 @@ const handleConfirmPassword = async () => {
   
   onMounted(async () => {
     try {
+      console.log(userId);
       // Recupera i dati del ristorante tramite l'endpoint by-user
       const response = await axios.get(`https://safebites.onrender.com/api/v1/resturants/by-user/${userId}`, {
         token: localStorage.getItem('token')
