@@ -191,10 +191,10 @@ export default {
           });
           console.log(response);
           const user= await axios.get(`http://localhost:8081/api/v1/users/${response.data.id}`, {
-          token: response.data.token
+          token: auth.data.token
         });
         console.log(user);
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', auth.data.token);
         localStorage.setItem('user', JSON.stringify({
           id: response.data.id,
           email: user.data.email,
