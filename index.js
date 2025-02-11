@@ -18,6 +18,7 @@ mongoose.connect('mongodb+srv://filippobassetti:password@cluster0sb.p4q6k.mongod
   });
   */
 
+console.log(window.location.origin);
 
 app.locals.db = mongoose.connect(process.env.DB_URL)
   .then(() => {

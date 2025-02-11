@@ -75,7 +75,7 @@ app.use('/api/v1/ratings', ratings);
 /* Default 404 handler */
 app.use((req, res) => {
     res.status(404);
-    res.json({ error: 'Not found' });
+    res.json({ error: 'Not Found' });
 });
 
 /* Default error handler */
