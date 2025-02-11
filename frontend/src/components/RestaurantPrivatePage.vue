@@ -320,6 +320,7 @@
   const confirmPassword = ref('');
   const passwordError = ref('');
   const showNameFields = ref(false);
+  const userId = user.id;
 const newName = ref('');
 const newSurname = ref('');
 const showUsernameField = ref(false);
@@ -449,8 +450,6 @@ const handleConfirmPassword = async () => {
   
   const message = ref('');
   const reviews = ref([]);
-  
-  const userId = route.params.userId;
   
   onMounted(async () => {
     try {
