@@ -166,13 +166,19 @@ export default {
 
       try {
         let response;
+        let auth;
         if (this.isLogin) {
           console.log(authData);
           response = await axios.post('http://localhost:8081/api/v1/authentications', authData);
           console.log(response);
         } else {
           response = await axios.post('http://localhost:8081/api/v1/users', authData);
+          auth = await axios.post('http://localhost:8081/api/v1/authentications', {
+            email: this.email,
+            password: this.password
+          });
           console.log(response);
+          localStorage.setItem('token', auth.data.token);
         }
         console.log(`${this.isLogin ? 'Login' : 'Registration'} successful:`, response.data);
 

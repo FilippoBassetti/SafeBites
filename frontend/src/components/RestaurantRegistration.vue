@@ -307,44 +307,63 @@ export default {
       this.showDishesDropdown = !this.showDishesDropdown;
     },
     async registerUser() {
-      if (this.userFields.password.model !== this.userFields.confirmPassword.model) {
-        this.errorMessage = 'Passwords do not match';
-        return;
-      }
-      try {
-        const userResponse = await axios.post('http://localhost:8081/api/v1/users', {
-          email: this.userFields.email.model,
-          password: this.userFields.password.model,
-          user_name: this.userFields.username.model,
-          name: this.userFields.firstName.model,
-          family_name: this.userFields.lastName.model,
-          user_type: true
-        });
-        const userId = userResponse.data.id;
-        const openingHoursArray = this.openingHoursInput
-          .split(',')
-          .map(hour => hour.trim());
+  if (this.userFields.password.model !== this.userFields.confirmPassword.model) {
+    this.errorMessage = 'Passwords do not match';
+    return;
+  }
 
-        const restaurantResponse = await axios.post('http://localhost:8081/api/v1/restaurants', {
-          restaurant_name: this.restaurantFields.restaurantName.model,
-          restaurant_address: this.restaurantFields.restaurantAddress.model,
-          restaurant_photo_url: this.restaurantFields.restaurantPhoto.model,
-          restaurant_categories: this.restaurantCategories,
-          restaurant_cost: this.selectedCost,
-          restaurant_dishes: this.restaurantDishes,
-          restaurant_hours: openingHoursArray,
-          restaurant_opening_days: this.restaurantOpeningDays,
-          aic_certified: this.certificate,
-          user_id: userId
-        });
-        console.log(restaurantResponse)
+  try {
+    const userResponse = await axios.post('http://localhost:8081/api/v1/users', {
+      email: this.userFields.email.model,
+      password: this.userFields.password.model,
+      user_name: this.userFields.username.model,
+      name: this.userFields.firstName.model,
+      family_name: this.userFields.lastName.model,
+      user_type: true
+    });
+    console.log(userResponse);
+    const userId = userResponse.data.id;
 
-        this.$router.push('/');
-      } catch (error) {
-        console.error(error);
-        this.errorMessage = 'There was an error with the registration.';
-      }
-    }
+    // Trasformare i giorni di apertura in un array di 1 e 0
+    const openingDaysArray = [
+      this.restaurantOpeningDays.monday ? 1 : 0,
+      this.restaurantOpeningDays.tuesday ? 1 : 0,
+      this.restaurantOpeningDays.wednesday ? 1 : 0,
+      this.restaurantOpeningDays.thursday ? 1 : 0,
+      this.restaurantOpeningDays.friday ? 1 : 0,
+      this.restaurantOpeningDays.saturday ? 1 : 0,
+      this.restaurantOpeningDays.sunday ? 1 : 0
+    ];
+
+    const openingHoursArray = this.openingHoursInput.split(',').map(hour => hour.trim());
+
+    const authenticate = await axios.post('http://localhost:8081/api/v1/authentications', {
+      email: userResponse.data.email,
+      password: this.userFields.password.model
+    });
+
+    const token = authenticate.data.token;
+    const restaurantResponse = await axios.post('http://localhost:8081/api/v1/restaurants', {
+      restaurant_name: this.restaurantFields.restaurantName.model,
+      restaurant_address: this.restaurantFields.restaurantAddress.model,
+      restaurant_photo_url: this.restaurantFields.restaurantPhoto.model,
+      restaurant_categories: this.restaurantCategories,
+      restaurant_cost: this.selectedCost,
+      restaurant_dishes: this.restaurantDishes,
+      restaurant_hours: openingHoursArray,
+      restaurant_opening_days: openingDaysArray, // Qui inviamo l'array corretto
+      aic_certified: this.certificate,
+      user_id: userId,
+      token: token
+    });
+    console.log(restaurantResponse);
+
+    this.$router.push('/');
+  } catch (error) {
+    console.error(error);
+    this.errorMessage = 'There was an error with the registration.';
+  }
+}
   }
 };
 </script>
