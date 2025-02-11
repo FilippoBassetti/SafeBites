@@ -68,7 +68,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('', async (req, res) => {
     try {
-        const { categories, dishes, search, open_now, open_today, price, rating, certificate } = req.query;
+        const { categoria, pietanze, search, orario, open_today, costo, valutazioni, tolleranzaContaminazioni } = req.query;
         let query = {};
 
         // Filter by open days
@@ -77,24 +77,24 @@ router.get('', async (req, res) => {
         }
         
         // Filter by open hours
-        if (open_now) {
-            const currentTime = parseInt(open_now);
+        if (orario) {
+            const currentTime = parseInt(orario);
             query.opening_hours = { $elemMatch: { $lte: currentTime, $gte: currentTime } };
         }
 
         // Filter by certificate, if not provided or false, it want interract with this
-        if (certificate === 'true') {
+        if (tolleranzaContaminazioni === 'true') {
             query.certificate = true;
         }
 
         // Filter by category
-        if (categories) {
-            query.category = { $in: categories };
+        if (categoria) {
+            query.category = { $in: categoria };
         }
 
         // Filter by dishes
-        if (dishes) {
-            query['dishes.name'] = { $in: dishes };
+        if (pietanze) {
+            query['dishes.name'] = { $in: pietanze };
         }
 
         // Text search across multiple fields
@@ -111,13 +111,13 @@ router.get('', async (req, res) => {
         }
 
         // Filter by rating (greater than or equal)
-        if (rating) {
-            query.rating = { $gte: parseFloat(rating) };
+        if (valutazioni) {
+            query.rating = { $gte: parseFloat(valutazioni) };
         }
 
         // Filter by price (exact match)
-        if (price) {
-            query.price = parseInt(price);
+        if (costo) {
+            query.price = parseInt(costo);
         }
 
         let restaurants = await Restaurant.find(query);
