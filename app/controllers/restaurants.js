@@ -71,6 +71,22 @@ router.get('', async (req, res) => {
         const { categories, dishes, search, open_now, open_today, price, rating, certificate } = req.query;
         let query = {};
 
+        // Filter by open days
+        if (open_today) {
+            query[`opening_days.${parseInt(open_today)}`] = true;
+        }
+        
+        // Filter by open hours
+        if (open_now) {
+            const currentTime = parseInt(open_now);
+            query.opening_hours = { $elemMatch: { $lte: currentTime, $gte: currentTime } };
+        }
+
+        // Filter by certificate, if not provided or false, it want interract with this
+        if (certificate === 'true') {
+            query.certificate = true;
+        }
+
         // Filter by category
         if (categories) {
             query.category = { $in: categories };
@@ -102,22 +118,6 @@ router.get('', async (req, res) => {
         // Filter by price (exact match)
         if (price) {
             query.price = parseInt(price);
-        }
-
-        // Filter by open hours
-        if (open_now) {
-            const currentTime = parseInt(open_now);
-            query.opening_hours = { $elemMatch: { $lte: currentTime, $gte: currentTime } };
-        }
-
-        // Filter by open days
-        if (open_today) {
-            query[`opening_days.${parseInt(open_today)}`] = true;
-        }
-
-        // Filter by certificate, if not provided or false, it want interract with this
-        if (certificate === 'true') {
-            query.certificate = true;
         }
 
         let restaurants = await Restaurant.find(query);
