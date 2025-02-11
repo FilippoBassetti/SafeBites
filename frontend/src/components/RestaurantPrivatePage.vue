@@ -33,10 +33,57 @@
         <p class="text-sm text-gray-600 mb-4">
           <span class="font-semibold">Email:</span> {{ userEmail }}
         </p>
-    
+        <button
+    @click="handleChangeName"
+    class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2"
+  >
+    Change Name/Surname
+  </button>
+  <div v-if="showNameFields" class="mt-2">
+    <input
+      v-model="newName"
+      type="text"
+      placeholder="New Name"
+      class="w-full px-3 py-2 border rounded-lg mb-2"
+    />
+    <input
+      v-model="newSurname"
+      type="text"
+      placeholder="New Surname"
+      class="w-full px-3 py-2 border rounded-lg mb-2"
+    />
+    <button
+      @click="handleConfirmName"
+      class="w-full px-4 py-2 text-sm font-medium text-white bg-green-400 hover:bg-green-500 rounded-lg transition-colors"
+    >
+      Confirm Name
+    </button>
+  </div>
+
+  <!-- Change Username -->
+  <button
+    @click="handleChangeUsername"
+    class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2"
+  >
+    Change Username
+  </button>
+  <div v-if="showUsernameField" class="mt-2">
+    <input
+      v-model="newUsername"
+      type="text"
+      placeholder="New Username"
+      class="w-full px-3 py-2 border rounded-lg mb-2"
+    />
+    <button
+      @click="handleConfirmUsername"
+      class="w-full px-4 py-2 text-sm font-medium text-white bg-green-400 hover:bg-green-500 rounded-lg transition-colors"
+    >
+      Confirm Username
+    </button>
+  </div>
         <button
           @click="handleChangeEmail"
-          class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mb-2"
+          class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mb-2 mt-2"
         >
           Change Email
         </button>
@@ -247,6 +294,14 @@
             {{ message }}
           </div>
         </div>
+        <div class="mt-6">
+    <button
+      type="submit"
+      class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg"
+    >
+      Save Restaurant Changes
+    </button>
+  </div>
       </div>
     </div>
   </template>
@@ -264,9 +319,9 @@
   };
   const user = JSON.parse(localStorage.getItem('user'));
   // User info data
-  const Name = user.name;
-  const userName = user.username;
-  const userSurname = user.family_name;
+  var Name = user.name;
+  var userName = user.username;
+  var userSurname = user.family_name;
   const userEmail = user.email;
   const showEmailField = ref(false);
   const newEmail = ref('');
@@ -274,6 +329,11 @@
   const newPassword = ref('');
   const confirmPassword = ref('');
   const passwordError = ref('');
+  const showNameFields = ref(false);
+const newName = ref('');
+const newSurname = ref('');
+const showUsernameField = ref(false);
+const newUsername = ref('');
   
   // Restaurant form visibility
   const showModifyForm = ref(false);
@@ -287,20 +347,100 @@
   };
   
   const handleConfirmEmail = async () => {
-    // Implement email update logic
-  };
+  try {
+    await axios.put(
+      `http://localhost:8081/api/v1/users/${user.id}`,
+      {
+        email: newEmail.value,
+        token: localStorage.getItem('token')
+      }
+    );
+    
+    // Update local storage and UI
+    const updatedUser = { ...user, email: newEmail.value };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    userEmail.value = newEmail.value;
+    showEmailField.value = false;
+  } catch (error) {
+    console.error('Error updating email:', error);
+  }
+};
   
   const handleChangePassword = () => {
     showPasswordFields.value = !showPasswordFields.value;
   };
+
+  const handleChangeName = () => {
+  showNameFields.value = !showNameFields.value;
+  newName.value = Name;
+  newSurname.value = userSurname;
+};
+
+const handleConfirmName = async () => {
+  try {
+    const response = await axios.put(
+      `http://localhost:8081/api/v1/users/${user.id}`,
+      {
+        name: newName.value,
+        family_name: newSurname.value,
+        token: localStorage.getItem('token')
+      }
+    );
+    console.log(response);
+    // Update local storage and UI
+    const updatedUser = { ...user, name: newName.value, family_name: newSurname.value };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    Name = newName.value;
+    userSurname = newSurname.value;
+    showNameFields.value = false;
+  } catch (error) {
+    console.error('Error updating name:', error);
+  }
+};
+const handleChangeUsername = () => {
+  showUsernameField.value = !showUsernameField.value;
+  newUsername.value = userName;
+};
+
+const handleConfirmUsername = async () => {
+  try {
+    const response = await axios.put(
+      `http://localhost:8081/api/v1/users/${user.id}`,
+      {
+        user_name: newUsername.value,
+        token: localStorage.getItem('token')
+      }
+    );
+    console.log(response);
+    // Update local storage and UI
+    const updatedUser = { ...user, username: newUsername.value };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    userName = newUsername.value;
+    showUsernameField.value = false;
+  } catch (error) {
+    console.error('Error updating username:', error);
+  }
+};
   
-  const handleConfirmPassword = () => {
-    if (newPassword.value !== confirmPassword.value) {
-      passwordError.value = 'Passwords do not match';
-      return;
-    }
-    // Implement password update logic
-  };
+const handleConfirmPassword = async () => {
+  if (newPassword.value !== confirmPassword.value) {
+    passwordError.value = 'Passwords do not match';
+    return;
+  }
+  try {
+    await axios.put(
+      `http://localhost:8081/api/v1/users/${user.id}`,
+      {
+        password: newPassword.value,
+        token: localStorage.getItem('token')
+      }
+    );
+    showPasswordFields.value = false;
+    passwordError.value = '';
+  } catch (error) {
+    console.error('Error updating password:', error);
+  }
+};
   
   // Inizializzazione dell'oggetto restaurant
   const restaurant = ref({
@@ -325,7 +465,9 @@
   onMounted(async () => {
     try {
       // Recupera i dati del ristorante tramite l'endpoint by-user
-      const response = await axios.get(`http://localhost:8081/api/v1/resturants/by-user/${userId}`);
+      const response = await axios.get(`http://localhost:8081/api/v1/resturants/by-user/${userId}`, {
+        token: localStorage.getItem('token')
+      });
       restaurant.value = response.data;
       if (!restaurant.value.dishes) {
         restaurant.value.dishes = [];
@@ -343,14 +485,21 @@
   });
   
   const updateRestaurant = async () => {
-    try {
-      await axios.put(`http://localhost:8081/api/v1/restaurants/${restaurant.value.id}`, restaurant.value);
-      message.value = 'Ristorante aggiornato con successo!';
-    } catch (error) {
-      console.error("Errore durante l'aggiornamento del ristorante:", error);
-      message.value = "Si è verificato un errore durante l'aggiornamento.";
-    }
-  };
+  try {
+    await axios.put(
+      `http://localhost:8081/api/v1/restaurants/${restaurant.value.id}`,
+      {
+        ...restaurant.value,
+        token: localStorage.getItem('token')
+      }
+    );
+    message.value = 'Ristorante aggiornato con successo!';
+    setTimeout(() => message.value = '', 3000);
+  } catch (error) {
+    console.error("Errore durante l'aggiornamento:", error);
+    message.value = "Errore durante l'aggiornamento";
+  }
+};
   
   const addDish = () => {
     restaurant.value.dishes.push({
