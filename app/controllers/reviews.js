@@ -50,8 +50,9 @@ router.post('', async (req, res) => {
         }
 
         console.log( "post review"  + req.body.restaurant_id +  req.body.user_id );
+        console.log(Review.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id }) )
 
-        if (Review.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id })) {
+        if (Review.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id }) null) {
                     return res.status(400).json({ error: 'the user already reviewed this restaurant, want to edit -> PUT' });
         }
 
