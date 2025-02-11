@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const Path = require('path');
+const path = require('path');
 
 const authentication = require('./middlewares/authentication.js');
 const tokenChecker = require('./middlewares/tokenChecker.js');
@@ -15,6 +15,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
+
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
+
+// Catch-all route to serve index.html for Vue routing (SPA)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
+});
 
 app.use(
 
