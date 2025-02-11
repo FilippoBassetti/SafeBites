@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Catch-all route to serve index.html for Vue routing (SPA)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
 
 app.use(
