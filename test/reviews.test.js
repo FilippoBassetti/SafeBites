@@ -134,6 +134,10 @@ describe('POST /api/v1/restaurants', () => {
         Review.prototype.save = jest.fn().mockResolvedValue(mockCreatedReview);
     });
 
+    afterAll( () =>{
+        reviewSpy.mockRestore();
+    })
+
     test('creates new reviews and returns 201', async () => {
         const response = await request(app)
             .post(`/api/v1/reviews?token=${token}`)

@@ -128,6 +128,8 @@ describe('POST /api/v1/restaurants', () => {
     beforeEach(() => {
       Rating.prototype.save = jest.fn().mockResolvedValue(mockCreatedRating);
     });
+
+    
   
     test('creates new rating and returns 201', async () => {
       const response = await request(app)
