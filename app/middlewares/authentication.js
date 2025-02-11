@@ -16,6 +16,8 @@ router.post('', async function (req, res) {
             return res.status(404).json({ success: false, message: 'Authentication failed: User not found.' });
         }
 
+        console.log("Password:", typeof req.body.password, req.body.password);
+        console.log("Hashed Password:", typeof user.password, user.password);
 
         if (!(await bcrypt.compare(req.body.password, user.password))) {
             return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
