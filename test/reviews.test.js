@@ -1,5 +1,5 @@
 const request = require('supertest');
-const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const jwt = require('jsonwebtoken'); 
 const app = require('../app/app');
 const Review = require('../app/models/review');
 
@@ -7,7 +7,6 @@ jest.mock('../app/models/review');
 
 describe('GET /api/v1/reviews/:restaurant_id without user_id', () => {
 
-    // Moking User.findOne method
     let reviewSpy;
 
     const mockReview = {
@@ -48,6 +47,52 @@ describe('GET /api/v1/reviews/:restaurant_id without user_id', () => {
 
 });
 
+describe('GET /api/v1/r/:restaurant_id with user_id' , () => {
+
+    let reviewSpy;
+    
+    beforeAll(() => {
+        reviewSpy = jest.spyOn(Review, 'find').mockImplementation(({restaurant_id, user_id}) => { 
+        if (restaurant_id === 'valid_id' && user_id === "user_id") {
+          return [{
+              restaurant_id : "valid_id",
+              user_id : "user_id",
+              text: "very good"}]
+        } else {
+          return []
+        }
+      });
+    });
+    
+      afterAll(async () => {
+        reviewSpy.mockRestore();
+      });
+    
+      test('should find review with valid id and return 200 with resturant data', async () => {
+        const response = await request(app).get('/api/v1/reviews/valid_id?user_id=user_id');
+        expect(response.statusCode).toBe(200);
+      });
+    
+      test('should return 404 if review not found invaild rest_id', async () => {
+        const response = await request(app).get('/api/v1/reviews/invalid_id?user_id=user_id');
+        expect(response.statusCode).toBe(404);
+      });
+  
+      test('should return 404 if review not found invalid user_id', async () => {
+        const response = await request(app).get('/api/v1/reviews/valid_id?user_id=invalid_user_id');
+        expect(response.statusCode).toBe(404);
+      });
+    
+    
+      test('handles database error', async () => {
+        reviewSpy.mockRejectedValue(new Error('Database error'));
+        const response = await request(app).get('/api/v1/reviews/valid_id?user_id=user_id');
+        expect(response.statusCode).toBe(500);
+      });
+    
+    });
+  
+
 
 
 describe('POST /api/v1/restaurants', () => {
@@ -56,7 +101,6 @@ describe('POST /api/v1/restaurants', () => {
 
     beforeAll(() => {
         reviewSpy = jest.spyOn(Review, 'findOne').mockImplementation(({ restaurant_id, user_id }) => {
-            console.log("mock")
             if (restaurant_id === 'valid_id' && user_id === "user_id") {
                 return {
                     restaurant_id: "valid_id",
@@ -123,7 +167,6 @@ describe('POST /api/v1/restaurants', () => {
         const response = await request(app)
             .post(`/api/v1/reviews?token=${token}`)
             .send({ ...mockCreatedReview, user_id: 'user_id' });
-        console.log(response.error.text);
         expect(response.statusCode).toBe(400);
     });
 
@@ -161,7 +204,6 @@ describe('PUT /api/v1/restaurants', () => {
     beforeAll(() => {
         reviewSpy
             = jest.spyOn(Review, 'findOne').mockImplementation(({ restaurant_id, user_id }) => {
-                console.log("findOneMock" + restaurant_id + user_id);
                 if (restaurant_id === 'valid_id' && user_id === "valid_user_id") {
 
                     return {
@@ -192,7 +234,6 @@ describe('PUT /api/v1/restaurants', () => {
         const response = await request(app)
             .put(`/api/v1/reviews/valid_id?user_id=valid_user_id&token=${token}`)
             .send(mockReview);
-        console.log(response.error.text);
 
         expect(response.statusCode).toBe(200);
 
@@ -249,7 +290,6 @@ describe('DELETE /api/v1/ratings/:restaurant_id', () => {
 
     beforeAll(() => {
         reviewSpy = jest.spyOn(Review, 'findOne').mockImplementation(({ restaurant_id, user_id }) => {
-            console.log("findOneMock" + restaurant_id + user_id);
             if (restaurant_id === 'valid_id' && user_id === "valid_user_id") {
                 return {
                     mockReview
@@ -306,7 +346,6 @@ describe('DELETE /api/v1/ratings/:restaurant_id', () => {
     });
 
     test('missing user_id returns 400', async () => {
-        // No user_id query parameter is provided.
         const response = await request(app).delete(
             `/api/v1/reviews/valid_id?token=${token}`
         );

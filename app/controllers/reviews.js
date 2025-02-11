@@ -11,7 +11,7 @@ router.get('/:restaurant_id', async (req, res) => {
             reviews = await Review.find({ 
                 restaurant_id: req.params.restaurant_id, 
                 user_id: req.query.user_id 
-            }).exec();
+            });
         } else {
             reviews = await Review.find({ restaurant_id: req.params.restaurant_id });
         }
