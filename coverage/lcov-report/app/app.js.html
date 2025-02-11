@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">82.92% </span>
+                <span class="strong">74.39% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>68/82</span>
+                <span class='fraction'>61/82</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">82.92% </span>
+                <span class="strong">74.39% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>68/82</span>
+                <span class='fraction'>61/82</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -165,29 +165,11 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">74x</span>
-<span class="cline-any cline-yes">74x</span>
-<span class="cline-any cline-yes">74x</span>
-<span class="cline-any cline-yes">74x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">47x</span>
-<span class="cline-any cline-yes">28x</span>
-<span class="cline-any cline-yes">47x</span>
-<span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -204,6 +186,24 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -254,21 +254,21 @@ app.use(
 app.use('/api/v1/authentications', authentication);
 &nbsp;
 app.use('/api/v1/restaurants', (req, res, next) =&gt; {
-    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
-        tokenChecker(req, res, next);
-    } else {
-        next(); // Allow GET without authentication
-    }
+<span class="cstat-no" title="statement not covered" >    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {</span>
+<span class="cstat-no" title="statement not covered" >        tokenChecker(req, res, next);</span>
+<span class="cstat-no" title="statement not covered" >    } else {</span>
+<span class="cstat-no" title="statement not covered" >        next(); // Allow GET without authentication</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 });
 &nbsp;
 app.use('/api/v1/users', (req, res, next) =&gt; {
-    if (['PUT', 'DELETE', ].includes(req.method)) {
-        tokenChecker(req, res, next);
-    } else if (req.path === '/me') {
-        tokenChecker(req, res, next);
-    } else {
-        next(); // Allow GET without authentication
-    }
+<span class="cstat-no" title="statement not covered" >    if (['PUT', 'DELETE', ].includes(req.method)) {</span>
+<span class="cstat-no" title="statement not covered" >        tokenChecker(req, res, next);</span>
+<span class="cstat-no" title="statement not covered" >    } else if (req.path === '/me') {</span>
+<span class="cstat-no" title="statement not covered" >        tokenChecker(req, res, next);</span>
+<span class="cstat-no" title="statement not covered" >    } else {</span>
+<span class="cstat-no" title="statement not covered" >        next(); // Allow GET without authentication</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 });
 &nbsp;
 app.use('/api/v1/reviews', (req, res, next) =&gt; {
@@ -280,11 +280,11 @@ app.use('/api/v1/reviews', (req, res, next) =&gt; {
 });
 &nbsp;
 app.use('/api/v1/ratings', (req, res, next) =&gt; {
-<span class="cstat-no" title="statement not covered" >    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {</span>
-<span class="cstat-no" title="statement not covered" >        tokenChecker(req, res, next);</span>
-<span class="cstat-no" title="statement not covered" >    } else {</span>
-<span class="cstat-no" title="statement not covered" >        next(); // Allow GET without authentication</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else {
+        next(); // Allow GET without authentication
+    }
 });
 &nbsp;
 app.use('/api/v1/restaurants', restaurants);
@@ -313,7 +313,7 @@ module.exports = app;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-10T19:17:28.942Z
+                at 2025-02-11T08:56:10.754Z
             </div>
         <script src="../prettify.js"></script>
         <script>

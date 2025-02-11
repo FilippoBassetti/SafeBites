@@ -72,9 +72,9 @@ describe('GET /api/v1/users/:id', () => {
 
   beforeAll(() => {
     userSpy = jest.spyOn(User, 'findById').mockImplementation((id) => {
-      if (id === "1111") {
+      if (id === "valid_id") {
         return {
-          _id: "1111",
+          _id: "valid_id",
           email: "johndoe@example.com",
           password: "$2b$10$4sg/MiB9v2diO0nQ3X2g7OLXkuMsqZUWRIdmAYsKwCFUWXSbMXlUG",
           user_name: "johndoe",
@@ -95,7 +95,7 @@ describe('GET /api/v1/users/:id', () => {
   });
 
   test('GET /api/v1/users/:id with valid ID returns 200', async () => {
-    const response = await request(app).get('/api/v1/users/1111');
+    const response = await request(app).get('/api/v1/users/valid_id');
     expect(response.statusCode).toBe(200);
     expect(response.body.email).toBe("johndoe@example.com");
   });

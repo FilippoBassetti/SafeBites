@@ -6,12 +6,10 @@ const Restaurant = require('../app/models/restaurant');
 jest.mock('../app/models/restaurant');
 
 describe('GET /api/v1/restaurants/:id', () => {
-
-  // Moking User.findOne method
   let restSpy;
 
   beforeAll(() => {
-    restSpy = jest.spyOn(Restaurant, 'findById').mockImplementation((id) => { // to
+    restSpy = jest.spyOn(Restaurant, 'findById').mockImplementation((id) => { 
       if (id === 'valid_id') {
         return {
           _id: "valid_id",

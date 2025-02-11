@@ -8,10 +8,10 @@ router.get('/:restaurant_id', async (req, res) => {
         let ratings;
         // Check for user_id query parameter
         if (req.query.user_id) {
-            ratings = await Rating.find({ 
-                resaurant_id: req.params.restaurant_id, 
-                user_id: req.query.user_id 
-            }).exec();
+            ratings = await Rating.find({
+                restaurant_id: req.params.restaurant_id,
+                user_id: req.query.user_id
+            });
         } else {
             ratings = await Rating.find({ restaurant_id: req.params.restaurant_id });
         }
@@ -53,13 +53,17 @@ router.post('', async (req, res) => {
             return res.status(400).json({ error: 'Rating must be between 0 and 5' });
         }
 
+        if (Rating.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id })) {
+            return res.status(400).json({ error: 'the user already rated this restaurant, want to edit -> PUT' });
+        }
+
         // Create and save new rating
         let rating = new Rating({
-            restaurant_id: req.body.restaurant_id, 
-            user_id: req.body.user_id ,
+            restaurant_id: req.body.restaurant_id,
+            user_id: req.body.user_id,
             rating: req.body.rating
         });
-        
+
         rating = await rating.save();
 
         // Build response with location header
@@ -89,11 +93,11 @@ router.put('/:restaurant_id', async (req, res) => {
         }
 
         // Find existing rating
-        let rating = await Rating.findOne({ 
-            restaurant_id: req.params.restaurant_id, 
-            user_id: req.query.user_id 
-        }).exec();
-        
+        let rating = await Rating.findOne({
+            restaurant_id: req.params.restaurant_id,
+            user_id: req.query.user_id
+        });
+
         if (!rating) {
             return res.status(404).json({ error: 'Rating not found' });
         }
@@ -113,7 +117,7 @@ router.put('/:restaurant_id', async (req, res) => {
 
         // Verify ID consistency
         if (req.body.restaurant_id !== req.params.restaurant_id) {
-            return res.status(400).json({ error: 'rest_id mismatch' });
+            return res.status(400).json({ error: 'restaurant_id mismatch' });
         }
         if (req.body.user_id !== req.query.user_id) {
             return res.status(400).json({ error: 'user_id mismatch' });
@@ -157,13 +161,13 @@ router.delete('/:restaurant_id', async (req, res) => {
         if (!req.query.user_id) {
             return res.status(400).json({ error: 'Missing required user_id query parameter' });
         }
-        
+
         // Find and verify rating exists
-        let rating = await Rating.findOne({ 
-            restaurant_id: req.params.restaurant_id, 
-            user_id: req.query.user_id 
-        }).exec();
-        
+        let rating = await Rating.findOne({
+            restaurant_id: req.params.restaurant_id,
+            user_id: req.query.user_id
+        });
+
         if (!rating) {
             return res.status(404).json({ error: 'Rating not found' });
         }
