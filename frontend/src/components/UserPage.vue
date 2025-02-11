@@ -21,10 +21,10 @@
     </header>
     
     <div class="self-end mt-8"> 
-      <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+      <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 mr-3 rounded">
             Logout
       </button>
-      <button @click="deleteProfile" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded">
+      <button @click="deleteProfile" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 mr-3 rounded">
             Delete Profile
       </button>
     </div>
@@ -42,7 +42,46 @@
         <span class="font-semibold">Email:</span> {{ userEmail }}
       </p>
 
-      <button @click="handleChangeEmail" class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mb-2">
+      <!-- Change Name/Surname -->
+      <button @click="handleChangeName" class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mb-2">
+        Change Name/Surname
+      </button>
+      <div v-if="showNameFields" class="mt-2">
+        <input
+          v-model="newName"
+          type="text"
+          placeholder="New Name"
+          class="w-full px-3 py-2 border rounded-lg mb-2"
+        />
+        <input
+          v-model="newSurname"
+          type="text"
+          placeholder="New Surname"
+          class="w-full px-3 py-2 border rounded-lg mb-2"
+        />
+        <button @click="handleConfirmName" class="w-full px-4 py-2 text-sm font-medium text-white bg-green-400 hover:bg-green-500 rounded-lg transition-colors">
+          Confirm Name
+        </button>
+      </div>
+
+      <!-- Change Username -->
+      <button @click="handleChangeUsername" class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2">
+        Change Username
+      </button>
+      <div v-if="showUsernameField" class="mt-2">
+        <input
+          v-model="newUsername"
+          type="text"
+          placeholder="New Username"
+          class="w-full px-3 py-2 border rounded-lg mb-2"
+        />
+        <button @click="handleConfirmUsername" class="w-full px-4 py-2 text-sm font-medium text-white bg-green-400 hover:bg-green-500 rounded-lg transition-colors">
+          Confirm Username
+        </button>
+      </div>
+
+      <!-- Change Email -->
+      <button @click="handleChangeEmail" class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2">
         Change Email
       </button>
       <div v-if="showEmailField" class="mt-2">
@@ -57,6 +96,7 @@
         </button>
       </div>
 
+      <!-- Change Password -->
       <button @click="handleChangePassword" class="w-full px-4 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-lg transition-colors mt-2">
         Change Password
       </button>
@@ -79,17 +119,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Favorites Section -->
-    <section class="w-full max-w-4xl text-center mb-8">
-  <h2 class="text-2xl font-bold text-gray-800 mb-4 font-agatholight">FAVOURITES</h2>
-  <div class="flex flex-col items-center gap-4">
-    <div v-for="restaurant in favoriteRestaurants" :key="restaurant.id" class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow w-96">
-      <h3 class="text-lg font-medium text-gray-700">{{ restaurant.name }}</h3>
-    </div>
-  </div>
-</section>
-  
   </div>
 </template>
 
@@ -104,16 +133,22 @@ const userName = ref('');
 const Name = ref('');
 const userSurname = ref('');
 const userEmail = ref('');
-const favoriteRestaurants = ref([]);
+
+const showNameFields = ref(false);
+const newName = ref('');
+const newSurname = ref('');
+
+const showUsernameField = ref(false);
+const newUsername = ref('');
 
 const showEmailField = ref(false);
 const newEmail = ref('');
+
 const showPasswordFields = ref(false);
 const newPassword = ref('');
 const confirmPassword = ref('');
 const passwordError = ref('');
 
-// Recupera dati utente dall'API
 const fetchUserData = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -130,46 +165,70 @@ const fetchUserData = async () => {
     Name.value = userData.name;
     userSurname.value = userData.family_name;
     userEmail.value = userData.email;
-    favoriteRestaurants.value = userData.favourite_list || [];
-    console.log(userData)
 
   } catch (error) {
     console.error("Error fetching user data:", error);
     alert("Error fetching user data.");
   }
 };
+
 const navigateTo = (routePath) => {
-    router.push(routePath);
-  };
+  router.push(routePath);
+};
 
 onMounted(async () => {
   await fetchUserData();
-  await fetchFavoriteRestaurants();
 });
-const fetchFavoriteRestaurants = async () => {
+
+// Name/Surname Handlers
+const handleChangeName = () => {
+  showNameFields.value = !showNameFields.value;
+};
+
+const handleConfirmName = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (!storedUser || !storedUser.id) {
-      throw new Error("User data not found in localStorage");
-    }
-
-    const userResponse = await axios.get(`http://localhost:8081/api/v1/users/${storedUser.id}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    });
-
-    const favoriteIds = userResponse.data.favourite_list || [];
-    
-    // Effettua una richiesta per ottenere i dettagli di tutti i ristoranti preferiti
-    const restaurantRequests = favoriteIds.map(id =>
-      axios.get(`http://localhost:8081/api/v1/restaurants/${id}`)
+    const response = await axios.put(
+      `http://localhost:8081/api/v1/users/${storedUser.id}`,
+      {
+        name: newName.value,
+        family_name: newSurname.value,
+        token: localStorage.getItem('token')  // Add token to body
+      }
     );
-
-    const restaurantResponses = await Promise.all(restaurantRequests);
-    favoriteRestaurants.value = restaurantResponses.map(res => res.data);
-
+    console.log(response);
+    Name.value = newName.value;
+    userSurname.value = newSurname.value;
+    alert('Name updated successfully!');
+    showNameFields.value = false;
   } catch (error) {
-    console.error("Error fetching favorite restaurants:", error);
-    alert("Error fetching favorite restaurants.");
+    console.error('Error updating name:', error);
+    alert('Error updating name.');
+  }
+};
+
+// Username Handlers
+const handleChangeUsername = () => {
+  showUsernameField.value = !showUsernameField.value;
+};
+
+const handleConfirmUsername = async () => {
+  try {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const response = await axios.put(
+      `http://localhost:8081/api/v1/users/${storedUser.id}`,
+      {
+        user_name: newUsername.value,
+        token: localStorage.getItem('token')  // Add token to body
+      }
+    );
+    console.log(response);
+    userName.value = newUsername.value;
+    alert('Username updated successfully!');
+    showUsernameField.value = false;
+  } catch (error) {
+    console.error('Error updating username:', error);
+    alert('Error updating username.');
   }
 };
 
@@ -180,9 +239,13 @@ const handleChangeEmail = () => {
 const handleConfirmEmail = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
-    const response = await axios.put(`http://localhost:8081/api/v1/users/${storedUser.id}`, {
-      email: newEmail.value
-    });
+    const response = await axios.put(
+      `http://localhost:8081/api/v1/users/${storedUser.id}`,
+      {
+        email: newEmail.value,
+        token: localStorage.getItem('token')  // Add token to body
+      }
+    );
     console.log(response);
     userEmail.value = newEmail.value;
     alert('Email updated successfully!');
@@ -199,14 +262,17 @@ const handleChangePassword = () => {
 
 const handleConfirmPassword = async () => {
   if (newPassword.value !== confirmPassword.value) {
-    passwordError.value = 'Passwords do not match!';
-    return;
+    // ... password check remains the same
   }
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
-    const response = await axios.put(`http://localhost:8081/api/v1/users/${storedUser.id}`, {
-      password: newPassword.value
-    });
+    const response = await axios.put(
+      `http://localhost:8081/api/v1/users/${storedUser.id}`,
+      {
+        password: newPassword.value,
+        token: localStorage.getItem('token')  // Add token to body
+      }
+    );
     console.log(response);
     alert('Password updated successfully!');
     showPasswordFields.value = false;
@@ -226,7 +292,11 @@ const deleteProfile = async () => {
   if (!confirm('Are you sure you want to delete your profile?')) return;
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
-    await axios.delete(`http://localhost:8081/api/v1/users/${storedUser.id}`);
+    await axios.delete(`http://localhost:8081/api/v1/users/${storedUser.id}`, {
+      data: {  // Send token in request body for DELETE
+        token: localStorage.getItem('token')
+      }
+    });
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     router.push('/Home');

@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="ml-6">
-        <img src="../assets/safebites_logo.png" alt="Logo" />
+        <img src="../assets/safebites_logo.png" alt="Logo" @click="navigateTo('/Home')" />
       </div>
       <h2 class="mt-6 text-center text-3xl font-agatholight text-gray-900">
         {{ isLogin ? 'SIGN IN TO YOUR ACCOUNT' : 'CREATE NEW ACCOUNT' }}
@@ -168,9 +168,21 @@ export default {
         let response;
         let auth;
         if (this.isLogin) {
-          console.log(authData);
           response = await axios.post('http://localhost:8081/api/v1/authentications', authData);
-          console.log(response);
+          const user= await axios.get(`http://localhost:8081/api/v1/users/${response.data.id}`, {
+          token: response.data.token
+        });
+        console.log(user);
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify({
+          id: response.data.id,
+          email: user.data.email,
+          user_name: user.data.user_name,
+          name: user.data.name,
+          family_name: user.data.family_name,
+          user_type: user.data.user_type
+        }));
+          console.log(JSON.parse(localStorage.getItem('user')));
         } else {
           response = await axios.post('http://localhost:8081/api/v1/users', authData);
           auth = await axios.post('http://localhost:8081/api/v1/authentications', {
@@ -178,22 +190,25 @@ export default {
             password: this.password
           });
           console.log(response);
-          localStorage.setItem('token', auth.data.token);
+          const user= await axios.get(`http://localhost:8081/api/v1/users/${response.data.id}`, {
+          token: auth.data.token
+        });
+        console.log(user);
+        localStorage.setItem('token', auth.data.token);
+        localStorage.setItem('user', JSON.stringify({
+          id: response.data.id,
+          email: user.data.email,
+          user_name: user.data.user_name,
+          name: user.data.name,
+          family_name: user.data.family_name,
+          user_type: user.data.user_type
+        }));
         }
         console.log(`${this.isLogin ? 'Login' : 'Registration'} successful:`, response.data);
 
         // Salva token e dati utente in localStorage
 
         alert(`${this.isLogin ? 'Login' : 'Registration'} successful!`);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify({
-          id: response.data.id,
-          email: response.data.email,
-          user_name: this.user_name,
-          name: this.name,
-          family_name: this.family_name,
-          user_type: response.data.user_type
-        }));
         this.$router.push('/Home');
       } catch (error) {
         console.error('Error during authentication:', error.response ? error.response.data.message : error);
