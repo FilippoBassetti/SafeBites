@@ -313,7 +313,7 @@ export default {
   }
 
   try {
-    const userResponse = await axios.post('http://localhost:8081/api/v1/users', {
+    const userResponse = await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/users`, {
       email: this.userFields.email.model,
       password: this.userFields.password.model,
       user_name: this.userFields.username.model,
@@ -340,7 +340,7 @@ export default {
   .map(hour => hour.trim().split('-').map(num => parseInt(num, 10)))
   .filter(range => range.length === 2 && range.every(n => !isNaN(n)));
 
-    const authenticate = await axios.post('http://localhost:8081/api/v1/authentications', {
+    const authenticate = await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/authentications`, {
       email: userResponse.data.email,
       password: this.userFields.password.model
     });
@@ -356,7 +356,7 @@ export default {
           family_name: this.userFields.lastName.model,
           user_type: userResponse.data.user_type
         }));
-    const restaurantResponse = await axios.post('http://localhost:8081/api/v1/restaurants', {
+    const restaurantResponse = await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/restaurants`, {
       name: this.restaurantFields.restaurantName.model,
       address: this.restaurantFields.restaurantAddress.model,
       profile_url: this.restaurantFields.restaurantPhoto.model,

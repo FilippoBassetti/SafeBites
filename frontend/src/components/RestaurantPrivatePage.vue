@@ -349,7 +349,7 @@ const newUsername = ref('');
   const handleConfirmEmail = async () => {
   try {
     await axios.put(
-      `http://localhost:8081/api/v1/users/${user.id}`,
+      `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
       {
         email: newEmail.value,
         token: localStorage.getItem('token')
@@ -379,7 +379,7 @@ const newUsername = ref('');
 const handleConfirmName = async () => {
   try {
     const response = await axios.put(
-      `http://localhost:8081/api/v1/users/${user.id}`,
+      `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
       {
         name: newName.value,
         family_name: newSurname.value,
@@ -405,7 +405,7 @@ const handleChangeUsername = () => {
 const handleConfirmUsername = async () => {
   try {
     const response = await axios.put(
-      `http://localhost:8081/api/v1/users/${user.id}`,
+      `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
       {
         user_name: newUsername.value,
         token: localStorage.getItem('token')
@@ -429,7 +429,7 @@ const handleConfirmPassword = async () => {
   }
   try {
     await axios.put(
-      `http://localhost:8081/api/v1/users/${user.id}`,
+      `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
       {
         password: newPassword.value,
         token: localStorage.getItem('token')
@@ -465,7 +465,7 @@ const handleConfirmPassword = async () => {
   onMounted(async () => {
     try {
       // Recupera i dati del ristorante tramite l'endpoint by-user
-      const response = await axios.get(`http://localhost:8081/api/v1/resturants/by-user/${userId}`, {
+      const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/resturants/by-user/${userId}`, {
         token: localStorage.getItem('token')
       });
       restaurant.value = response.data;
@@ -487,7 +487,7 @@ const handleConfirmPassword = async () => {
   const updateRestaurant = async () => {
   try {
     await axios.put(
-      `http://localhost:8081/api/v1/restaurants/${restaurant.value.id}`,
+      `${process.env.VUE_APP_API_URL}/api/v1/restaurants/${restaurant.value.id}`,
       {
         ...restaurant.value,
         token: localStorage.getItem('token')
@@ -523,7 +523,7 @@ const handleConfirmPassword = async () => {
   
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`http://localhost:8081/api/v1/reviews/${restaurant.value.id}`);
+      const res = await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/reviews/${restaurant.value.id}`);
       // Il backend restituisce { reviews: [...] }
       reviews.value = res.data.reviews;
     } catch (error) {

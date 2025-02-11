@@ -395,12 +395,12 @@ async deleteReview(review) {
         if (existingReview) {
             // Update existing review using PUT
             await axios.put(
-                `http://localhost:8081/api/v1/reviews/${this.restaurant.id}?user_id=${user.id}`,
+                `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}?user_id=${user.id}`,
                 payload
             );
         } else {
             // Create new review using POST
-            await axios.post('http://localhost:8081/api/v1/reviews', payload);
+            await axios.post('${process.env.VUE_APP_API_URL}/api/v1/reviews', payload);
         }
 
         alert('Review submitted successfully!');
@@ -415,7 +415,7 @@ async deleteReview(review) {
 async fetchReviews() {
     try {
       const res = await axios.get(
-        `http://localhost:8081/api/v1/reviews/${this.restaurant.id}`
+        `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}`
       );
       
       // Fetch usernames for each review
@@ -423,7 +423,7 @@ async fetchReviews() {
         res.data.reviews.map(async review => {
           try {
             const userRes = await axios.get(
-              `http://localhost:8081/api/v1/users/${review.user_id}`,
+              `${process.env.VUE_APP_API_URL}/api/v1/users/${review.user_id}`,
               {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -451,7 +451,7 @@ async fetchReviews() {
 async getUserReview(userId) {
     try {
         const response = await axios.get(
-            `http://localhost:8081/api/v1/reviews/${this.restaurant.id}?user_id=${userId}`
+            `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}?user_id=${userId}`
         );
         return response.data.reviews.length > 0 ? response.data.reviews[0] : null;
     } catch (error) {
@@ -483,12 +483,12 @@ async getUserReview(userId) {
         if (existingRating) {
             // Update rating: include all required fields in the body
             await axios.put(
-                `http://localhost:8081/api/v1/ratings/${this.restaurant.id}?user_id=${user.id}`,
+                `${process.env.VUE_APP_API_URL}/api/v1/ratings/${this.restaurant.id}?user_id=${user.id}`,
                 payload // Send full payload
             );
         } else {
             // Create new rating
-            await axios.post('http://localhost:8081/api/v1/ratings', payload);
+            await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/ratings`, payload);
         }
 
         // Refresh ratings and update 
@@ -508,7 +508,7 @@ async getUserReview(userId) {
 async getUserRating(userId) {
     try {
         const response = await axios.get(
-            `http://localhost:8081/api/v1/ratings/${this.restaurant.id}?user_id=${userId}`,
+            `${process.env.VUE_APP_API_URL}/api/v1/ratings/${this.restaurant.id}?user_id=${userId}`,
         );
         return response.data.ratings.length > 0 ? response.data.ratings[0] : null;
     } catch (error) {

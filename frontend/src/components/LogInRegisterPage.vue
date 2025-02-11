@@ -168,8 +168,8 @@ export default {
         let response;
         let auth;
         if (this.isLogin) {
-          response = await axios.post('http://localhost:8081/api/v1/authentications', authData);
-          const user= await axios.get(`http://localhost:8081/api/v1/users/${response.data.id}`, {
+          response = await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/authentications`, authData);
+          const user= await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/users/${response.data.id}`, {
           token: response.data.token
         });
         console.log(user);
@@ -184,13 +184,13 @@ export default {
         }));
           console.log(JSON.parse(localStorage.getItem('user')));
         } else {
-          response = await axios.post('http://localhost:8081/api/v1/users', authData);
-          auth = await axios.post('http://localhost:8081/api/v1/authentications', {
+          response = await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/users`, authData);
+          auth = await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/authentications`, {
             email: this.email,
             password: this.password
           });
           console.log(response);
-          const user= await axios.get(`http://localhost:8081/api/v1/users/${response.data.id}`, {
+          const user= await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/users/${response.data.id}`, {
           token: auth.data.token
         });
         console.log(user);
