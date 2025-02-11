@@ -173,7 +173,10 @@ router.delete('/:restaurant_id', async (req, res) => {
         }
 
         // Delete rating
-        await rating.deleteOne();
+        await Rating.deleteOne({
+            restaurant_id: req.params.restaurant_id,
+            user_id: req.query.user_id
+        });
         console.log('Rating removed');
         res.status(204).send();
     } catch (error) {

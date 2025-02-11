@@ -37,13 +37,14 @@ describe('GET /api/v1/ratings/:restaurant_id without user_id' , () => {
     expect(response.statusCode).toBe(404);
   });
 
-  test('GET /api/v1/users/:id handles database error', async () => {
+  test('handles database error', async () => {
     ratingSpy.mockRejectedValue(new Error('Database error'));
     const response = await request(app).get('/api/v1/ratings/valid_id');
     expect(response.statusCode).toBe(500);
   });
 
 });
+
 
 describe('POST /api/v1/restaurants', () => {
     
@@ -53,7 +54,6 @@ describe('POST /api/v1/restaurants', () => {
       ratingSpy = jest.spyOn(Rating, 'findOne').mockImplementation(({restaurant_id, user_id}) => { 
         
         if (restaurant_id === 'valid_id' && user_id === "user_id") {
-          console.log("findOneMock");
           return [{
               restaurant_id : "valid_id",
               user_id : "user_id",
@@ -114,7 +114,7 @@ describe('POST /api/v1/restaurants', () => {
       });
     });
   
-    test('should return 400 when restaurant already exists', async () => {
+    test('should return 400 when rating already exists', async () => {
       const response = await request(app)
         .post(`/api/v1/ratings?token=${token}`)
         .send({ ...mockCreatedRating, user_id: 'user_id'});
@@ -131,7 +131,7 @@ describe('POST /api/v1/restaurants', () => {
      
     });
   });
-  /*
+
   describe('PUT /api/v1/restaurants', () => {
     
     let ratingSpy;
@@ -152,9 +152,15 @@ describe('POST /api/v1/restaurants', () => {
 
     beforeAll(() => {
       ratingSpy = jest.spyOn(Rating, 'findOne').mockImplementation(({restaurant_id, user_id}) => { 
+        console.log("findOneMock" + restaurant_id + user_id);
         if (restaurant_id === 'valid_id' && user_id === "valid_user_id") {
-          console.log("findOneMock");
-          return mockRating;
+          
+          return {
+            ...mockUpdatedRating,
+            save: jest.fn().mockResolvedValue({
+              ...mockUpdatedRating
+            })
+          }; 
         } else {
           return null
         }
@@ -171,55 +177,133 @@ describe('POST /api/v1/restaurants', () => {
       expiresIn: 86400 // expires in 24 hours
     }
     var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
   
-    beforeEach(() => {
-      Rating.prototype.save = jest.fn().mockResolvedValue(mockCreatedRating);
-    });
-  
-    test('update rating and returns 201', async () => {
+    test('update rating and returns 200', async () => {
       const response = await request(app)
-        .put(`/api/v1/ratings/valid_id?user_id=valid_user_id?token=${token}`)
-        .send(mockCreatedRating);
+        .put(`/api/v1/ratings/valid_id?user_id=valid_user_id&token=${token}`)
+        .send(mockRating);
+      console.log(response.error.text);
   
-      expect(response.statusCode).toBe(201);
+      expect(response.statusCode).toBe(200);
      
     });
-   
-    describe('should return 400 Bad Request for invalid data', () => {
-      const requiredFields = ['user_id', 'restaurant_id', 'rating'];
-  
-      requiredFields.forEach(field => {
-        test(`when missing ${field}`, async () => {
-          const invalidData = { ...mockCreatedRating };
-          delete invalidData[field];
-  
-          const response = await request(app)
-            .post(`/api/v1/ratings?token=${token}`)
-            .send(invalidData);
-  
-          expect(response.status).toBe(400);
-          expect(response.body).toEqual({
-            error: `Missing required field: ${field}`
-          });
-        });
-      });
-    });
-  
-    test('should return 500 when restaurant already exists', async () => {
+
+    test('should return 404 when no restaurnt match', async () => {
       const response = await request(app)
-        .post(`/api/v1/ratings?token=${token}`)
-        .send({ ...mockCreatedRating, user_id: 'user_id'});
+        .put(`/api/v1/ratings/invalid_id?user_id=valid_user_id&token=${token}`)
+        .send({ ...mockRating, restaurant_id: 'invalid_id'});
+      expect(response.statusCode).toBe(404);
+    });
+
+    test('should return 400 when restaurnt_id dont match', async () => {
+      const response = await request(app)
+        .put(`/api/v1/ratings/valid_id?user_id=valid_user_id&token=${token}`)
+        .send({ ...mockRating, restaurant_id: 'invalid_id'});
+      expect(response.statusCode).toBe(400);
+    });
+
+    test('should return 404 when no user match', async () => {
+      const response = await request(app)
+        .put(`/api/v1/ratings/valid_id?user_id=invalid_user_id&token=${token}`)
+        .send({ ...mockRating, user_id: 'invalid_user_id'});
+      expect(response.statusCode).toBe(404);
+    });
+    test('should return 400 when user_id dont match', async () => {
+      const response = await request(app)
+        .put(`/api/v1/ratings/valid_id?user_id=valid_user_id&token=${token}`)
+        .send({ ...mockRating, user_id: 'invalid_user_id'});
       expect(response.statusCode).toBe(400);
     });
   
+  
     test('database error returns 500', async () => {
-      const mockError = new Error(new Error('Database error'));
-      Rating.prototype.save.mockRejectedValueOnce(mockError);
+      ratingSpy.mockRejectedValue(new Error('Database error'));
       const response = await request(app)
-        .post(`/api/v1/ratings?token=${token}`)
-        .send(mockCreatedRating);
+        .put(`/api/v1/ratings/valid_id?user_id=valid_user_id&token=${token}`)
+        .send(mockRating);
       expect(response.statusCode).toBe(500);
-     
     });
   });
-  */
+
+  describe('DELETE /api/v1/ratings/:restaurant_id', () => {
+    let ratingSpy;
+    let deleteSpy;
+
+    const mockRating = {
+      user_id: 'valid_user_id',
+      restaurant_id: 'valid_id',
+      rating: 3
+    };
+  
+    beforeAll(() => {
+      ratingSpy = jest.spyOn(Rating, 'findOne').mockImplementation(({restaurant_id, user_id}) => { 
+        console.log("findOneMock" + restaurant_id + user_id);
+        if (restaurant_id === 'valid_id' && user_id === "valid_user_id") {
+          return {
+            mockRating
+            }
+          } else {
+          return null
+        }
+      });
+      deleteSpy = jest
+        .spyOn(Rating, 'deleteOne')
+        .mockResolvedValue({ deletedCount: 1 });
+    });
+    
+    afterAll(() => {
+      ratingSpy.mockRestore();
+      deleteSpy.mockRestore();
+    });
+
+    var payload = {
+      id: "67a362ecb0ca5655003bf523",
+      email: "johndoe@example.com"
+      // other data encrypted in the token	
+    }
+    var options = {
+      expiresIn: 86400 // expires in 24 hours
+    }
+    var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+  
+    test('deletes rating and returns 204', async () => {
+      const response = await request(app).delete(
+        `/api/v1/ratings/valid_id?user_id=valid_user_id&token=${token}`
+      );
+      expect(response.statusCode).toBe(204);
+    });
+  
+    test('invalid restaurant returns 404', async () => {
+      // With an invalid restaurant_id/user_id combination, the rating is not found.
+      const response = await request(app).delete(
+        `/api/v1/ratings/invalid_id?user_id=valid_user_id&token=${token}`
+      );
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toEqual({
+        error: 'Rating not found'
+      });
+    });
+    test('invalid user returns 404', async () => {
+      // With an invalid restaurant_id/user_id combination, the rating is not found.
+      const response = await request(app).delete(
+        `/api/v1/ratings/valid_id?user_id=invalid_user_id&token=${token}`
+      );
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toEqual({
+        error: 'Rating not found'
+      });
+    });
+  
+    test('missing user_id returns 400', async () => {
+      // No user_id query parameter is provided.
+      const response = await request(app).delete(
+        `/api/v1/ratings/valid_id?token=${token}`
+      );
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Missing required user_id query parameter'
+      });
+    });
+  });
+  
