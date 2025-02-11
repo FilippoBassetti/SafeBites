@@ -171,15 +171,22 @@
 
       <!-- Lista delle recensioni -->
       <div v-if="reviews.length > 0" class="space-y-4">
-        <div
-          v-for="(review, index) in reviews"
-          :key="index"
-          class="bg-white p-4 rounded-lg shadow-md" 
-        >
-          <p class="text-gray-700">{{ review.text }}</p>
-          <p class="text-gray-500 text-sm">By user: {{ review.username }}</p>
-        </div>
-      </div>
+    <div
+      v-for="(review, index) in reviews"
+      :key="index"
+      class="bg-white p-4 rounded-lg shadow-md relative"
+    >
+      <button
+        v-if="currentUserId === review.user_id"
+        @click="deleteReview(review)"
+        class="absolute top-2 right-2 text-red-500 hover:text-red-700"
+      >
+        Delete
+      </button>
+      <p class="text-gray-700">{{ review.text }}</p>
+      <p class="text-gray-500 text-sm">By user: {{ review.username }}</p>
+    </div>
+  </div>
       <div v-else>
         <p class="text-gray-600">No reviews yet.</p>
       </div>
@@ -249,23 +256,34 @@ export default {
       return !!localStorage.getItem('token');
     }
   },
-  created() {
-    this.fetchRestaurantData();
+  async created() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) this.currentUserId = user.id;
+    await this.fetchRestaurantData();
   },
   methods: {
     async fetchRestaurantData() {
-    try {
+      try {
         const response = await axios.get(`http://localhost:8081/api/v1/restaurants/${this.$route.params.id}`);
         this.restaurant = response.data;
         this.checkOpenStatus();
-        await Promise.all([
-            this.fetchReviews(),
-            this.fetchRatings() // Fetch ratings in parallel with reviews
-        ]);
-    } catch (error) {
+        
+        if (this.isLoggedIn) {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userRes = await axios.get(
+    `http://localhost:8081/api/v1/users/${user.id}`,
+    { 
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } 
+    } // ✅ Corrected closing bracket here
+  );
+  this.isFavorite = userRes.data.favourite_list.includes(this.restaurant.id);
+}
+        
+        await Promise.all([this.fetchReviews(), this.fetchRatings()]);
+      } catch (error) {
         console.error('Error fetching restaurant data:', error);
-    }
-},
+      }
+    },
     checkOpenStatus() {
       const now = new Date();
       const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
@@ -299,9 +317,47 @@ export default {
         this.totalRatings = 0;
     }
 },
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
-      // Aggiungi qui eventuale chiamata API per aggiornare i preferiti dell'utente
+async toggleFavorite() {
+      if (!this.isLoggedIn) {
+        alert('Please login to add favorites');
+        return;
+      }
+      
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+      
+      try {
+        // Get current user data
+        const userRes = await axios.get(
+          `http://localhost:8081/api/v1/users/${user.id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        // Update favorite list
+        const newFavorites = userRes.data.favourite_list.includes(this.restaurant.id)
+          ? userRes.data.favourite_list.filter(id => id !== this.restaurant.id)
+          : [...userRes.data.favourite_list, this.restaurant.id];
+
+        // Update user
+        await axios.put(
+          `http://localhost:8081/api/v1/users/${user.id}`,
+          {
+            ...userRes.data,
+            favourite_list: newFavorites,
+            token: token
+          }
+        );
+
+        // Update local state
+        this.isFavorite = !this.isFavorite;
+        localStorage.setItem('user', JSON.stringify({
+          ...user,
+          favourite_list: newFavorites
+        }));
+      } catch (error) {
+        console.error('Error updating favorites:', error);
+        alert('Failed to update favorites.');
+      }
     },
     navigateTo(route) {
       this.$router.push(route);
@@ -320,6 +376,20 @@ export default {
       this.navigateTo('/Access');
     }
 },
+async deleteReview(review) {
+      if (!confirm('Are you sure you want to delete this review?')) return;
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(
+          `http://localhost:8081/api/v1/reviews/${this.restaurant.id}?user_id=${review.user_id}`,
+          { data: { token } }
+        );
+        await this.fetchReviews();
+      } catch (error) {
+        console.error('Error deleting review:', error);
+        alert(error.response?.data?.error || 'Failed to delete review.');
+      }
+    },
     loadRestaurants() {
       // Implementa la logica per il caricamento dei ristoranti, se necessario
     },
