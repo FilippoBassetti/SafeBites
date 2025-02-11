@@ -14,12 +14,11 @@ const routes = [
     component: LogInRegisterPage,
   },
   {
-    path: '/Home',
-    name: 'HomePage',
-    component: HomePage,
+    path: '/',
+    redirect: '/Home' // Reindirizza automaticamente alla pagina Home
   },
   {
-    path: '/',
+    path: '/Home',
     name: 'HomePage',
     component: HomePage,
   },
