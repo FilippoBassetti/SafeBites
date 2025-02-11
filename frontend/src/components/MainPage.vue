@@ -226,6 +226,7 @@ function toggleVicinanza() {
 
 async function loadRestaurants() {
   try {
+    console.log(process.env.VUE_APP_API_URL);
     const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/restaurants`, {
       params: {
         search: searchQuery.value ? [searchQuery.value] : [],

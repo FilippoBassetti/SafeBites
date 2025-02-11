@@ -415,7 +415,7 @@ async deleteReview(review) {
 async fetchReviews() {
     try {
       const res = await axios.get(
-        `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}`
+        `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}` 
       );
       
       // Fetch usernames for each review
