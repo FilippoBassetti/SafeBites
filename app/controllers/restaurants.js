@@ -83,7 +83,7 @@ router.get('', async (req, res) => {
         }
 
         // Filter by certificate, if not provided or false, it want interract with this
-        if (tolleranzaContaminazioni === 'true') {
+        if (tolleranzaContaminazioni === 'false') {
             query.certificate = true;
         }
 
