@@ -40,8 +40,7 @@ router.get('/:restaurant_id', async (req, res) => {
 router.post('', async (req, res) => {
     console.log('Received POST request with body:', req.body);
     try {
-        // Validate required field
-        console.log("pre validation");
+
         const requiredFields = ['restaurant_id', 'user_id', 'text'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
@@ -49,10 +48,9 @@ router.post('', async (req, res) => {
             }
         }
 
-        console.log( "post review"  + req.body.restaurant_id +  req.body.user_id );
-        console.log(Review.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id }) == null )
+     
 
-        if (Review.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id }) != null) {
+        if (await Review.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id })) {
                     return res.status(400).json({ error: 'the user already reviewed this restaurant, want to edit -> PUT' });
         }
 

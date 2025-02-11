@@ -53,7 +53,7 @@ router.post('', async (req, res) => {
             return res.status(400).json({ error: 'Rating must be between 0 and 5' });
         }
 
-        if (Rating.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id })) {
+        if (await Rating.findOne({ restaurant_id: req.body.restaurant_id, user_id: req.body.user_id })) {
             return res.status(400).json({ error: 'the user already rated this restaurant, want to edit -> PUT' });
         }
 
