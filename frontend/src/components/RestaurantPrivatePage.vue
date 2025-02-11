@@ -8,16 +8,6 @@
           class="h-24 w-50"
           @click="navigateTo('/Home')"
         />
-
-        <!-- USER ICON -->
-        <div class="flex items-center space-x-2">
-          <img
-            src="../assets/user_icon.png"
-            alt="User"
-            class="h-14 w-14 mt-4"
-            @click="navigateTo('/userPage')"
-          />
-        </div>
       </div>
     </header>
     <div class="min-h-screen bg-gray-50 flex flex-col items-center p-6">

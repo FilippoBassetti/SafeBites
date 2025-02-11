@@ -64,7 +64,7 @@
         <h2 class="text-3xl font-bold text-gray-800">{{ restaurant.name }}</h2>
         <p class="text-gray-600">{{ restaurant.address }}</p>
         <p class="text-gray-600">Category: {{ restaurant.category }}</p>
-        <p class="text-gray-600">Price: {{ restaurant.price }}</p>
+        <p class="text-gray-600">Price: {{ priceRange }}</p>
         <p class="text-gray-600">Status: {{ isOpen ? "Open" : "Closed" }}</p>
         <p class="text-gray-600">Rating: {{ currentRating.toFixed(1) }} ⭐ ({{ totalRatings }} ratings)</p>
       </div>
@@ -228,6 +228,11 @@ export default {
   computed: {
     isLoggedIn() {
       return !!localStorage.getItem('token');
+    },
+    priceRange() {
+      const ranges = ['0-10', '10-20', '20-40', '40-60', '60-100', '100+'];
+      // Assuming price is 1-based index (1-6)
+      return ranges[this.restaurant.price - 1] || 'Unknown';
     }
   },
   async created() {

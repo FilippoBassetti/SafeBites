@@ -10,28 +10,34 @@
       <h2 class="text-lg font-bold">{{ restaurant.name }}</h2>
       <p class="text-sm text-gray-600">{{ restaurant.address }}</p>
       <p class="text-sm text-gray-600">Category: {{ restaurant.category }}</p>
-      <p class="text-sm text-gray-600">Price: {{ restaurant.price }}</p>
+      <p class="text-sm text-gray-600">Price: {{ priceRange }}</p>
     </div>
   </div>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
+import { computed } from 'vue';
 
 export default {
   name: 'CardMainPage',
-  props: ['restaurant'], // Riceve i dati come prop
+  props: ['restaurant'],
   setup(props) {
     const router = useRouter();
-    console.log(props.restaurant.id);
+    
+    const priceRange = computed(() => {
+      const ranges = ['0-10', '10-20', '20-40', '40-60', '60-100', '100+'];
+      return ranges[props.restaurant.price - 1] || 'Unknown';
+    });
+
     const goToDetails = () => {
       router.push({
         path: `/restaurant/${props.restaurant.id}`,
-        state: { restaurant: props.restaurant } // Passa i dati al navigatore
+        state: { restaurant: props.restaurant }
       });
     };
 
-    return { goToDetails };
+    return { goToDetails, priceRange };
   }
 };
 </script>

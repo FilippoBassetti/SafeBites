@@ -261,12 +261,12 @@ export default {
         { label: 'Sun', key: 'sunday' }
       ],
       categoriesOptions: [
-        'ristorante',
-        'bar',
-        'pasticceria',
-        'gelateria',
-        'bancarella',
-        'supermercato'
+        'Ristorante',
+        'Bar',
+        'Pasticceria',
+        'Gelateria',
+        'Bancarella',
+        'Supermercato'
       ],
       costOptions: [
         { label: '0-10 €', value: 1 },
@@ -280,21 +280,21 @@ export default {
       restaurantDishes: [],
       showDishesDropdown: false,
       dishesOptions: [
-        'antipasti',
-        'piatti tipici',
-        'pasta',
-        'risotto',
-        'primo di altro tipo',
-        'pizza',
-        'secondi',
-        'fritti',
-        'hamburger',
-        'gelato',
-        'dolci',
-        'sushi',
-        'birra',
-        'brioche',
-        'aperitivi'
+        'Antipasti',
+        'Piatti tipici',
+        'Pasta',
+        'Risotto',
+        'Primo di altro tipo',
+        'Pizza',
+        'Secondi',
+        'Fritti',
+        'Hamburger',
+        'Gelato',
+        'Dolci',
+        'Sushi',
+        'Birra',
+        'Brioche',
+        'Aperitivi'
       ],
       certificate: false
     };
