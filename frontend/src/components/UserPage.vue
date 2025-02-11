@@ -156,7 +156,7 @@ const fetchUserData = async () => {
       throw new Error("User data not found in localStorage");
     }
 
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/users/${storedUser.id}`, {
+    const response = await axios.get(`https://safebites.onrender.com/api/v1/users/${storedUser.id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     });
 
@@ -189,7 +189,7 @@ const handleConfirmName = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     const response = await axios.put(
-      `${process.env.VUE_APP_API_URL}/api/v1/users/${storedUser.id}`,
+      `https://safebites.onrender.com/api/v1/users/${storedUser.id}`,
       {
         name: newName.value,
         family_name: newSurname.value,
@@ -216,7 +216,7 @@ const handleConfirmUsername = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     const response = await axios.put(
-      `${process.env.VUE_APP_API_URL}/api/v1/users/${storedUser.id}`,
+      `https://safebites.onrender.com/api/v1/users/${storedUser.id}`,
       {
         user_name: newUsername.value,
         token: localStorage.getItem('token')  // Add token to body
@@ -240,7 +240,7 @@ const handleConfirmEmail = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     const response = await axios.put(
-      `${process.env.VUE_APP_API_URL}/api/v1/users/${storedUser.id}`,
+      `https://safebites.onrender.com/api/v1/users/${storedUser.id}`,
       {
         email: newEmail.value,
         token: localStorage.getItem('token')  // Add token to body
@@ -267,7 +267,7 @@ const handleConfirmPassword = async () => {
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     const response = await axios.put(
-      `${process.env.VUE_APP_API_URL}/api/v1/users/${storedUser.id}`,
+      `https://safebites.onrender.com/api/v1/users/${storedUser.id}`,
       {
         password: newPassword.value,
         token: localStorage.getItem('token')  // Add token to body
@@ -292,7 +292,7 @@ const deleteProfile = async () => {
   if (!confirm('Are you sure you want to delete your profile?')) return;
   try {
     const storedUser = JSON.parse(localStorage.getItem('user'));
-    await axios.delete(`${process.env.VUE_APP_API_URL}/api/v1/users/${storedUser.id}`, {
+    await axios.delete(`https://safebites.onrender.com/api/v1/users/${storedUser.id}`, {
       data: {  // Send token in request body for DELETE
         token: localStorage.getItem('token')
       }

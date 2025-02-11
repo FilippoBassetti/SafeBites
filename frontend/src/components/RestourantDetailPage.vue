@@ -238,14 +238,14 @@ export default {
   methods: {
     async fetchRestaurantData() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/v1/restaurants/${this.$route.params.id}`);
+        const response = await axios.get(`https://safebites.onrender.com/api/v1/restaurants/${this.$route.params.id}`);
         this.restaurant = response.data;
         this.checkOpenStatus();
         
         if (this.isLoggedIn) {
   const user = JSON.parse(localStorage.getItem('user'));
   const userRes = await axios.get(
-    `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
+    `https://safebites.onrender.com/api/v1/users/${user.id}`,
     { 
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } 
     } // ✅ Corrected closing bracket here
@@ -273,7 +273,7 @@ export default {
   async fetchRatings() {
     try {
         const response = await axios.get(
-            `${process.env.VUE_APP_API_URL}/api/v1/ratings/${this.restaurant.id}`
+            `https://safebites.onrender.com/api/v1/ratings/${this.restaurant.id}`
         );
         
         const ratings = response.data.ratings;
@@ -303,7 +303,7 @@ async toggleFavorite() {
       try {
         // Get current user data
         const userRes = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
+          `https://safebites.onrender.com/api/v1/users/${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -314,7 +314,7 @@ async toggleFavorite() {
 
         // Update user
         await axios.put(
-          `${process.env.VUE_APP_API_URL}/api/v1/users/${user.id}`,
+          `https://safebites.onrender.com/api/v1/users/${user.id}`,
           {
             ...userRes.data,
             favourite_list: newFavorites,
@@ -355,7 +355,7 @@ async deleteReview(review) {
       try {
         const token = localStorage.getItem('token');
         await axios.delete(
-          `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}?user_id=${review.user_id}`,
+          `https://safebites.onrender.com/api/v1/reviews/${this.restaurant.id}?user_id=${review.user_id}`,
           { data: { token } }
         );
         await this.fetchReviews();
@@ -395,12 +395,12 @@ async deleteReview(review) {
         if (existingReview) {
             // Update existing review using PUT
             await axios.put(
-                `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}?user_id=${user.id}`,
+                `https://safebites.onrender.com/api/v1/reviews/${this.restaurant.id}?user_id=${user.id}`,
                 payload
             );
         } else {
             // Create new review using POST
-            await axios.post('${process.env.VUE_APP_API_URL}/api/v1/reviews', payload);
+            await axios.post('https://safebites.onrender.com/api/v1/reviews', payload);
         }
 
         alert('Review submitted successfully!');
@@ -415,7 +415,7 @@ async deleteReview(review) {
 async fetchReviews() {
     try {
       const res = await axios.get(
-        `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}` 
+        `https://safebites.onrender.com/api/v1/reviews/${this.restaurant.id}` 
       );
       
       // Fetch usernames for each review
@@ -423,7 +423,7 @@ async fetchReviews() {
         res.data.reviews.map(async review => {
           try {
             const userRes = await axios.get(
-              `${process.env.VUE_APP_API_URL}/api/v1/users/${review.user_id}`,
+              `https://safebites.onrender.com/api/v1/users/${review.user_id}`,
               {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -451,7 +451,7 @@ async fetchReviews() {
 async getUserReview(userId) {
     try {
         const response = await axios.get(
-            `${process.env.VUE_APP_API_URL}/api/v1/reviews/${this.restaurant.id}?user_id=${userId}`
+            `https://safebites.onrender.com/api/v1/reviews/${this.restaurant.id}?user_id=${userId}`
         );
         return response.data.reviews.length > 0 ? response.data.reviews[0] : null;
     } catch (error) {
@@ -483,12 +483,12 @@ async getUserReview(userId) {
         if (existingRating) {
             // Update rating: include all required fields in the body
             await axios.put(
-                `${process.env.VUE_APP_API_URL}/api/v1/ratings/${this.restaurant.id}?user_id=${user.id}`,
+                `https://safebites.onrender.com/api/v1/ratings/${this.restaurant.id}?user_id=${user.id}`,
                 payload // Send full payload
             );
         } else {
             // Create new rating
-            await axios.post(`${process.env.VUE_APP_API_URL}/api/v1/ratings`, payload);
+            await axios.post(`https://safebites.onrender.com/api/v1/ratings`, payload);
         }
 
         // Refresh ratings and update 
@@ -508,7 +508,7 @@ async getUserReview(userId) {
 async getUserRating(userId) {
     try {
         const response = await axios.get(
-            `${process.env.VUE_APP_API_URL}/api/v1/ratings/${this.restaurant.id}?user_id=${userId}`,
+            `https://safebites.onrender.com/api/v1/ratings/${this.restaurant.id}?user_id=${userId}`,
         );
         return response.data.ratings.length > 0 ? response.data.ratings[0] : null;
     } catch (error) {
