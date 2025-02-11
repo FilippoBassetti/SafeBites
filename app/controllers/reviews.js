@@ -91,7 +91,7 @@ router.put('/:restaurant_id', async (req, res) => {
         let review = await Review.findOne({ 
             restaurant_id: req.params.restaurant_id, 
             user_id: req.query.user_id 
-        }).exec();
+        });
         
         if (!review) {
             return res.status(404).json({ error: 'Review not found' });
@@ -156,14 +156,17 @@ router.delete('/:restaurant_id', async (req, res) => {
         let review = await Review.findOne({ 
             restaurant_id: req.params.restaurant_id, 
             user_id: req.query.user_id 
-        }).exec();
+        });
         
         if (!review) {
             return res.status(404).json({ error: 'Review not found' });
         }
 
         // Delete review
-        await review.deleteOne();
+        await Review.deleteOne({ 
+            restaurant_id: req.params.restaurant_id, 
+            user_id: req.query.user_id 
+        });
         console.log('review removed')
         res.status(204).send()
     } catch (error) {
