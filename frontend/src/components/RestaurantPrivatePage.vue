@@ -298,11 +298,10 @@
   
   <script setup>
   import { ref, onMounted } from 'vue';
-  import { useRoute, useRouter } from 'vue-router';
+  import { useRouter } from 'vue-router';
   import axios from 'axios';
   
   const router = useRouter();
-  const route = useRoute();
   
   const navigateTo = (routePath) => {
     router.push(routePath);
