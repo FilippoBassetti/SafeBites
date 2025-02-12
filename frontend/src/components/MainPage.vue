@@ -163,7 +163,21 @@ const filters = ref({
 });
 
 const categories = ref(["Ristorante", "Bar", "Pasticceria", "Gelateria", "Bancarella", "Supermercato"]);
-const dishes = ref(["antipasti", "piatti tipici", "pasta", "risotto", "primo di altro tipo", "pizza", "secondi", "fritti", "hamburger", "gelato", "dolci", "sushi", "birra", "brioche", "aperitivi"]);
+const dishes = ref(['Antipasti',
+        'Piatti tipici',
+        'Pasta',
+        'Risotto',
+        'Primo di altro tipo',
+        'Pizza',
+        'Secondi',
+        'Fritti',
+        'Hamburger',
+        'Gelato',
+        'Dolci',
+        'Sushi',
+        'Birra',
+        'Brioche',
+        'Aperitivi']);
 const hours = ref(Array.from({ length: 24 }, (_, i) => i));
 const costOptions = ref({
   1: "0-10 €",
